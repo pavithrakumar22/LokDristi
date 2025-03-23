@@ -1,0 +1,26 @@
+# Ignore node_modules (for frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+
+# Ignore Python-related files (for backend)
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+
+# Ignore IDE/editor-related files
+*.log
+*.swp
+.idea/
+.vscode/
+
+# Ignore blockchain-related files
+blockchain/.env
+blockchain/node_modules/
+blockchain/dist/
+blockchain/build/
+
+# Ignore system files
+.DS_Store
+Thumbs.db

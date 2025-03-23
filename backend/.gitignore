@@ -1,0 +1,38 @@
+# Python-specific (if you're using Python for backend)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+*.env
+*.log
+
+# Node.js-specific (if you're using Node.js for backend)
+node_modules/
+npm-debug.log
+yarn-error.log
+*.env
+
+# Java-specific (if you're using Java for backend)
+*.class
+*.jar
+*.war
+*.ear
+target/
+
+# Logs and temporary files
+*.log
+*.swp
+*.bak
+*.tmp
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# IDE/editor specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
