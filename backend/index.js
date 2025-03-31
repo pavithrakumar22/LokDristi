@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import connectDB from "./config/db.js";
-
+import authRoutes from './routes/auth.js';
 
 dotenv.config()
 const app=express()
@@ -16,8 +16,10 @@ app.use(cors());
 connectDB();
 
 app.get("/",(req,res)=>{
-    res.send("OpenGovAI is running.....")
-})
+    res.send("LokDristi is running.....")
+});
+
+app.use('/api/auth', authRoutes);
 
 
 app.listen(PORT, () => {
