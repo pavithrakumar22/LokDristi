@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "LokDhristi - Bridging Citizens and Government",
+  title: "LokDhristi",
   description: "A comprehensive civic platform designed to empower citizens and enhance government transparency",
     generator: 'v0.dev'
 }

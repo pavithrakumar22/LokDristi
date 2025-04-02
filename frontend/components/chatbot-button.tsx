@@ -24,7 +24,7 @@ const ChatbotButton = () => {
               onClick={() => setIsOpen(false)}
               className="text-white hover:bg-blue-700 h-8 w-8 p-0"
             >
-              <X size={18} />
+              <X onClick={() => setIsOpen(false)} size={18} />
             </Button>
           </div>
         </CardHeader>

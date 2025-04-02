@@ -150,106 +150,6 @@ const FeatureSection = () => {
       },
     },
     {
-      id: "expenditures",
-      title: "Government Expenditure Dashboard",
-      description:
-        "Gain transparency into how government funds are being utilized with detailed breakdowns of expenditures across departments, projects, and initiatives at national, state, and local levels.",
-      icon: <BarChart3Icon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Interactive dashboards showing real-time expenditure data",
-        "Comparative analysis tools for year-on-year spending",
-        "Department-wise budget allocation and utilization metrics",
-        "Anomaly detection system to flag unusual spending patterns",
-        "Citizen feedback mechanism on spending priorities",
-      ],
-      stats: {
-        tracked: "₹1.2T+",
-        departments: "85+",
-        updates: "Daily",
-      },
-    },
-    {
-      id: "contact",
-      title: "Government Connect Portal",
-      description:
-        "Easily connect with relevant government departments and officials through our streamlined contact system that ensures your queries reach the right person and receive timely responses.",
-      icon: <PhoneIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Intelligent routing system to connect with the right department",
-        "Appointment scheduling with government officials",
-        "Video conferencing facilities for remote consultations",
-        "Response time guarantees with escalation protocols",
-        "Feedback system to rate and improve service quality",
-      ],
-      stats: {
-        connections: "500K+",
-        avgResponse: "48 hours",
-        satisfaction: "89%",
-      },
-    },
-    {
-      id: "accessibility",
-      title: "Universal Accessibility Features",
-      description:
-        "Access the platform with screen readers, font size management, language options, and other accessibility tools to ensure everyone, including persons with disabilities, can use LokDhristi effectively.",
-      icon: <AccessibilityIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "WCAG 2.1 AA compliant interface design",
-        "Screen reader compatibility with ARIA attributes",
-        "Dynamic font sizing and high contrast modes",
-        "Support for 15+ Indian languages with transliteration",
-        "Voice navigation and command system for hands-free operation",
-      ],
-      stats: {
-        languages: "15+",
-        accessibility: "WCAG 2.1 AA",
-        inclusivity: "100%",
-      },
-    },
-    {
-      id: "whoswho",
-      title: "Government Directory & Profiles",
-      description:
-        "Learn about government officials, their roles, responsibilities, and contact information to better navigate government services and understand who's responsible for different areas of governance.",
-      icon: <UserIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Comprehensive directory of officials from village to national level",
-        "Detailed profiles with roles, responsibilities and jurisdiction",
-        "Performance metrics and citizen satisfaction ratings",
-        "Term tracking and historical position holders",
-        "Direct contact options with appointment scheduling",
-      ],
-      stats: {
-        officials: "250K+",
-        departments: "120+",
-        levels: "5",
-      },
-    },
-    {
-      id: "events",
-      title: "Government & Community Events Calendar",
-      description:
-        "Stay updated on upcoming and ongoing government events, public meetings, community gatherings, and important deadlines through our comprehensive events platform.",
-      icon: <CalendarIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Personalized event recommendations based on interests",
-        "Location-based filtering for local events",
-        "Calendar integration with reminder functionality",
-        "Live streaming of public meetings and events",
-        "Post-event resources including recordings and documents",
-      ],
-      stats: {
-        events: "1,000+/month",
-        attendance: "5M+",
-        coverage: "Pan-India",
-      },
-    },
-    {
       id: "alerts",
       title: "Critical Alerts & Notifications System",
       description:
@@ -309,66 +209,6 @@ const FeatureSection = () => {
         success: "35%",
       },
     },
-    {
-      id: "digital-identity",
-      title: "Unified Digital Identity",
-      description:
-        "Access all government services with a single secure digital identity, eliminating the need for multiple logins and paperwork while ensuring your data remains protected and under your control.",
-      icon: <Shield className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Single sign-on for all government services",
-        "Biometric and multi-factor authentication",
-        "User-controlled data sharing permissions",
-        "Secure document storage and verification",
-        "Comprehensive activity logs and security alerts",
-      ],
-      stats: {
-        users: "750M+",
-        security: "Military-grade",
-        convenience: "100%",
-      },
-    },
-    {
-      id: "open-data",
-      title: "Open Government Data Portal",
-      description:
-        "Access, download, and utilize government data sets for research, application development, and analysis, promoting transparency and enabling innovation through open data initiatives.",
-      icon: <Building className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Thousands of curated government datasets",
-        "API access for developers and researchers",
-        "Visualization tools for data exploration",
-        "Regular updates with versioning control",
-        "Community projects showcase using open data",
-      ],
-      stats: {
-        datasets: "25,000+",
-        downloads: "10M+",
-        applications: "3,000+",
-      },
-    },
-    {
-      id: "participatory-budgeting",
-      title: "Participatory Budgeting",
-      description:
-        "Have a direct say in how a portion of your local government budget is spent by proposing projects, voting on initiatives, and tracking the implementation of community-chosen priorities.",
-      icon: <Landmark className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Propose community projects for funding",
-        "Vote on budget allocation priorities",
-        "Transparent selection and implementation process",
-        "Impact assessment of funded projects",
-        "Year-on-year participation growth tracking",
-      ],
-      stats: {
-        budget: "₹500Cr+",
-        participants: "1.2M+",
-        projects: "750+",
-      },
-    },
   ]
 
   const timelineData = features.map((feature) => ({
@@ -422,11 +262,6 @@ const FeatureSection = () => {
           </p>
         </motion.div>
 
-        {/* Feature Timeline View */}
-        <div className="mb-24">
-          <h3 className="text-2xl font-bold text-blue-700 mb-8 text-center">Feature Journey</h3>
-          <Timeline data={timelineData} />
-        </div>
 
         {/* Detailed Feature Cards */}
         <div className="space-y-32">
