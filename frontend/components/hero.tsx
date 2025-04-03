@@ -17,7 +17,7 @@ const Hero = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-blue-600 mb-6">LokDhristi</h1>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-blue-700 mb-6">LokDhristi</h1>
             </motion.div>
 
             <motion.div
@@ -49,11 +49,11 @@ const Hero = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-wrap gap-4"
             >
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white group">
+              <Button className="bg-blue-700 hover:bg-blue-800 text-white group">
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
-              <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+              <Button variant="outline" className="border-blue-700 text-blue-700 hover:bg-blue-50">
                 Watch Demo
               </Button>
             </motion.div>
@@ -68,7 +68,7 @@ const Hero = () => {
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="w-8 h-8 rounded-full bg-blue-200 border-2 border-white flex items-center justify-center text-xs text-blue-600 font-bold"
+                    className="w-8 h-8 rounded-full bg-blue-200 border-2 border-white flex items-center justify-center text-xs text-blue-700 font-bold"
                   >
                     {i}
                   </div>

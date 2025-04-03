@@ -73,7 +73,7 @@ const Navbar = () => {
   return (
     <>
       {/* Accessibility Controls */}
-      <div className="bg-blue-800 text-white py-2">
+      <div className="bg-blue-900 text-white py-2">
         <div className="container mx-auto px-4 flex justify-end items-center space-x-4">
           <div className="flex items-center space-x-2">
             <span className="text-sm">Text Size:</span>
@@ -133,7 +133,7 @@ const Navbar = () => {
                   height={40}
                   className="mr-2"
                 />
-                <span className="text-xl font-bold text-blue-600">LokDhristi</span>
+                <span className="text-xl font-bold text-blue-800">LokDhristi</span>
               </Link>
 
               <div className="hidden md:flex md:ml-10 md:space-x-6">
@@ -143,7 +143,7 @@ const Navbar = () => {
                       <TooltipTrigger asChild>
                         <Link
                           href={link.href}
-                          className="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                          className="flex items-center text-blue-800 hover:text-blue-900 transition-colors duration-200"
                         >
                           {link.icon}
                           <span className="ml-1">{link.name}</span>
@@ -162,7 +162,7 @@ const Navbar = () => {
               <div className="hidden md:block">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center text-blue-600 border-blue-600">
+                    <Button variant="outline" className="flex items-center text-blue-800 border-blue-900">
                       <User size={16} className="mr-2" />
                       My Account
                       <ChevronDown size={16} className="ml-2" />
@@ -191,7 +191,7 @@ const Navbar = () => {
               </div>
 
               <div className="md:hidden">
-                <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-blue-600">
+                <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-blue-800">
                   {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </Button>
               </div>
@@ -212,7 +212,7 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
+                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.icon}
@@ -224,21 +224,21 @@ const Navbar = () => {
                   <p className="px-3 text-sm font-medium text-gray-500 mb-2">Account</p>
                   <Link
                     href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
+                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
                   >
                     <User size={18} className="mr-2" />
                     My Profile
                   </Link>
                   <Link
                     href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
+                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
                   >
                     <MapPin size={18} className="mr-2" />
                     My Constituency
                   </Link>
                   <Link
                     href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
+                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
                   >
                     <LogOut size={18} className="mr-2" />
                     Logout

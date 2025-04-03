@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 
 const Footer = () => {
   return (
-    <footer className="bg-blue-600 text-white">
+    <footer className="bg-blue-800 text-white">
       {/* Newsletter Section */}
       <div className="bg-blue-700 py-12">
         <div className="container mx-auto px-4">
@@ -152,7 +152,7 @@ const Footer = () => {
             </ul>
 
             <div className="mt-6">
-              <Button variant="outline" className="border-white text-white hover:bg-blue-700">
+              <Button className="border-white text-white hover:bg-blue-700">
                 Contact Support
               </Button>
             </div>
