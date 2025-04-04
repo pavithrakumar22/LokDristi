@@ -26,6 +26,7 @@ export default function SignupPage() {
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -38,7 +39,7 @@ export default function SignupPage() {
     setError("")
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch(`${BASE_URL}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +68,7 @@ export default function SignupPage() {
     setError("")
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/verify-signup", {
+      const response = await fetch(`${BASE_URL}/api/auth/verify-signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,7 +30,7 @@ export default function LoginPage() {
     setError("")
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +59,7 @@ export default function LoginPage() {
     setError("")
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/verify-login", {
+      const response = await fetch(`${BASE_URL}/api/auth/verify-login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +78,7 @@ export default function LoginPage() {
 
       setSuccess("Login successful!")
       setTimeout(() => {
-        router.push("/")
+        router.push("/DonatePage")
       }, 1000)
     } catch (err: any) {
       setError(err.message || "Something went wrong")
