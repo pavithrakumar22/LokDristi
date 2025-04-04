@@ -18,20 +18,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-<<<<<<< HEAD
-    "mongoose": "^8.12.1",
-    "nodemon": "^3.1.9"
-=======
-<<<<<<< HEAD
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
     "nodemon": "^3.1.9",
-    "twilio": "^5.5.1",
-    "razorpay": "^2.9.6"
-=======
-    "mongoose": "^8.13.1",
-    "nodemon": "^3.1.9"
->>>>>>> 3d69d9c (Added suggestion box functionality and MongoDB integration)
->>>>>>> 52783dd (Resolved merge conflicts and committed latest changes)
+    "razorpay": "^2.9.6",
+    "twilio": "^5.5.1"
   }
 }
