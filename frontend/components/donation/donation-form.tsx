@@ -165,7 +165,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
   }
 
   const handleDonate = () => {
-    if (!agreedToTerms || !otpVerified || !category || amount < 1000) {
+    if (!agreedToTerms || !otpVerified || !category || amount < 1000 || amount > 100000) {
       return
     }
     setShowConfirmation(true)
@@ -335,7 +335,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                   <span>Donation Amount (₹)</span>
                   <span className="text-xs text-gray-500">Min: ₹1,000 | Max: ₹100,000</span>
                 </Label>
-                <Input id="amount" type="number" min={1000} max={100000} value={amount} onChange={handleAmountChange} />
+                <Input id="amount" type="number" value={amount} onChange={handleAmountChange} />
 
                 <div className="flex justify-between mt-2">
                   {[1000, 5000, 10000, 25000].map((amt) => (
@@ -562,4 +562,3 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 }
 
 export default DonationForm
-
