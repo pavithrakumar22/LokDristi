@@ -3,6 +3,7 @@ import FeatureSection from "@/components/feature-section"
 import Footer from "@/components/footer"
 import ChatbotButton from "@/components/chatbot-button"
 import Navbar from "@/components/navbarL"
+import SuggestionBox from "@/components/SuggestionBox"
 
 export default function Home() {
   return (
