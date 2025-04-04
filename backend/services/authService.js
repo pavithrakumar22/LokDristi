@@ -1,6 +1,7 @@
-import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import twilio from 'twilio';
+import dotenv from 'dotenv';
+import User from '../models/user.js';
 
 dotenv.config();
 
