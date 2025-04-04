@@ -211,37 +211,6 @@ const FeatureSection = () => {
     },
   ]
 
-  const timelineData = features.map((feature) => ({
-    title: feature.title,
-    content: (
-      <div>
-        <p className="text-neutral-800 dark:text-neutral-200 text-sm md:text-base font-normal mb-4">
-          {feature.description}
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <Image
-            src={feature.image || "/placeholder.svg"}
-            alt={feature.title}
-            width={400}
-            height={300}
-            className="rounded-lg object-cover h-40 md:h-52 w-full shadow-lg"
-          />
-          <div className="space-y-2">
-            <h4 className="font-semibold text-blue-700">Key Features:</h4>
-            <ul className="space-y-1">
-              {feature.details.slice(0, 3).map((detail, idx) => (
-                <li key={idx} className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm">{detail}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    ),
-  }))
-
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
