@@ -2,7 +2,7 @@ import Hero from "@/components/hero"
 import FeatureSection from "@/components/feature-section"
 import Footer from "@/components/footer"
 import ChatbotButton from "@/components/chatbot-button"
-import Navbar from "@/components/navbarL"
+import Navbar from "@/components/navbar"
 import SuggestionBox from "@/components/SuggestionBox"
 
 export default function Home() {
