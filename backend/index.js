@@ -14,13 +14,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}))
 app.use(cors());
 
-// connectDB();
+connectDB();
 
 app.get("/",(req,res)=>{
     res.send("LokDristi is running.....")
 });
 
-// app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 
 
 app.post('/order', async (req, res) => {

@@ -5,8 +5,14 @@ import bcrypt from 'bcrypt';
 const signup = async (req, res) => {
   try {
     const { aadhaarNo, phone, pincode } = req.body;
+
+    if (!aadhaarNo || !phone || !pincode) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
     const existingUser = await User.findOne({ phone });
-    if (existingUser && existingUser.isVerified) return res.status(400).json({ message: 'User already exists and is verified' });
+    if (existingUser && existingUser.isVerified)
+      return res.status(400).json({ message: 'User already exists and is verified' });
 
     const otp = await sendOtp(phone);
     const hashedOtp = await bcrypt.hash(otp, 10);
@@ -18,13 +24,20 @@ const signup = async (req, res) => {
       existingUser.otpExpires = new Date(Date.now() + 10 * 60000);
       await existingUser.save();
     } else {
-      const user = new User({ aadhaarNo, phone, pincode, otp: hashedOtp, otpExpires: new Date(Date.now() + 10 * 60000) });
+      const user = new User({
+        aadhaarNo,
+        phone,
+        pincode,
+        otp: hashedOtp,
+        otpExpires: new Date(Date.now() + 10 * 60000),
+      });
       await user.save();
     }
 
     res.status(200).json({ message: 'OTP sent for verification' });
   } catch (error) {
-    res.status(500).json({ message: 'Error in signup', error });
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Error in signup', error: error?.message || error });
   }
 };
 
@@ -87,4 +100,4 @@ const verifyLoginOtp = async (req, res) => {
   }
 };
 
-export { signup, verifySignupOtp, login, verifyLoginOtp }
+export { signup, verifySignupOtp, login, verifyLoginOtp };
