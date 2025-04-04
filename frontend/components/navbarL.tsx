@@ -18,6 +18,7 @@ import {
   HelpCircle,
   Bell,
   Settings,
+  Lightbulb,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -74,6 +75,7 @@ const Navbar = () => {
     { name: "Voting", href: "#voting", icon: <Vote size={18} /> },
     { name: "Legal Help", href: "#chatbot", icon: <HelpCircle size={18} /> },
     { name: "Alerts", href: "#alerts", icon: <Bell size={18} /> },
+    { name: "Suggestions", href: "/suggestions", icon: <Lightbulb size={18} /> },
   ]
 
   return (
