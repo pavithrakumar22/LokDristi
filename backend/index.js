@@ -17,7 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
-connectDB();
+connectDB().then(() => console.log("✅ MongoDB Connected Successfully!"));
+
 
 app.get("/", (req, res) => {
     res.send("LokDristi is running.....");
@@ -25,40 +26,22 @@ app.get("/", (req, res) => {
 
 // app.use('/api/auth', authRoutes);
 
-app.post('/order', async (req, res) => {
-    try {
-        const razorpay = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_SECRET
-        });
-
-        const { amount, currency } = req.body;
-        const options = {
-            amount,
-            currency,
-            receipt: `receipt#${new Date().getTime()}`
-        };
-
-        const order = await razorpay.orders.create(options);
-        if (!order) {
-            return res.status(500).send("Error creating order");
-        }
-
-        res.json(order);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error");
-    }
-});
-
 app.post('/sample-convert', async (req, res) => {
     try {
+        console.log("🔹 Received request:", req.body);
+
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID,
             key_secret: process.env.RAZORPAY_SECRET
         });
 
         const { username, amount, currency } = req.body;
+        if (!username || !amount || !currency) {
+            console.log("❌ Missing required fields");
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        console.log("🛠️ Creating order...");
         const options = {
             amount,
             currency,
@@ -67,12 +50,17 @@ app.post('/sample-convert', async (req, res) => {
 
         const order = await razorpay.orders.create(options);
         if (!order) {
+            console.log("❌ Error creating order");
             return res.status(500).send("Error creating order");
         }
 
+        console.log("✅ Order created:", order);
+
         let transaction = await Transaction.findOne({ username });
+        console.log("🔍 Transaction found:", transaction);
 
         if (!transaction) {
+            console.log("🆕 No previous transaction found, creating new...");
             transaction = new Transaction({
                 username,
                 orders: []
@@ -81,11 +69,14 @@ app.post('/sample-convert', async (req, res) => {
 
         transaction.orders.push(order);
         await transaction.save();
+        console.log("✅ Transaction saved successfully");
 
         const coinValue = amount / 10;
         let userCoins = await Coins.findOne({ username });
+        console.log("🔍 User Coins found:", userCoins);
 
         if (!userCoins) {
+            console.log("🆕 No user coins found, creating new...");
             userCoins = new Coins({
                 username,
                 coins: 0
@@ -94,37 +85,11 @@ app.post('/sample-convert', async (req, res) => {
 
         userCoins.coins += coinValue;
         await userCoins.save();
+        console.log("✅ Coins updated successfully");
 
         res.json({ order, coins: userCoins.coins });
     } catch (err) {
-        console.error(err);
+        console.error("❌ Error:", err);
         res.status(500).send("Error");
     }
-});
-
-app.post("/order/validate", async (req, res) => {
-    try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-        const sha = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET);
-        sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
-        const digest = sha.digest("hex");
-
-        if (digest !== razorpay_signature) {
-            return res.status(400).json({ msg: "Transaction is not legit!" });
-        }
-
-        res.json({
-            msg: "success",
-            orderId: razorpay_order_id,
-            paymentId: razorpay_payment_id,
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error");
-    }
-});
-
-app.listen(PORT, () => {
-    console.log("Listening on Port", PORT);
 });
