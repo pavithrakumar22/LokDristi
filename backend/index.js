@@ -9,8 +9,9 @@ import authRoutes from './routes/auth.js';
 import Transaction from "./models/Transaction.js";
 import Coins from "./models/Coins.js";
 
-dotenv.config();
-const app = express();
+
+dotenv.config()
+const app = express()
 const PORT = process.env.PORT || 5001;
 
 app.use(express.json());
