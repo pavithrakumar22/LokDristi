@@ -1,12 +1,10 @@
-"use client";
-import Navbar from "@/components/navbar";
-import Hero from "@/components/hero";
-import FeatureSection from "@/components/feature-section";
-import Footer from "@/components/footer";
-import ChatbotButton from "@/components/chatbot-button";
-import SuggestionBox from "@/components/SuggestionBox";
+import Hero from "@/components/hero"
+import FeatureSection from "@/components/feature-section"
+import Footer from "@/components/footer"
+import ChatbotButton from "@/components/chatbot-button"
+import Navbar from "@/components/navbarL"
 
-export default function LandingPage() {
+export default function Home() {
   return (
     <main className="min-h-screen bg-white">
       <Navbar />
@@ -27,5 +25,5 @@ export default function LandingPage() {
       <Footer />
       {/* <ChatbotButton /> */}
     </main>
-  );
+  )
 }
