@@ -1,28 +1,21 @@
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
-import connectDB from "./config/db.js";
-import authRoutes from './routes/auth.js';
+import connectDB from "./config/db.js"; // Import database connection
+import cors from "cors";
 
-dotenv.config()
-const app=express()
-const PORT = process.env.PORT || 5000;
+dotenv.config();
+connectDB(); // Connect to MongoDB
 
-app.use(express.json());
-app.use(express.urlencoded({extended: false}))
-app.use(cors());
+const app = express();
+app.use(express.json()); // Allow JSON data
+app.use(cors()); // Handle CORS
 
-connectDB();
+const PORT = process.env.PORT || 5001;
 
-app.get("/",(req,res)=>{
-    res.send("LokDristi is running.....")
+app.get("/", (req, res) => {
+  res.send("API is running...");
 });
 
-app.use('/api/auth', authRoutes);
-
-
 app.listen(PORT, () => {
-    console.log("Listening on Port", PORT)
-  })
-  
+  console.log(`✅ Server running on http://localhost:${PORT}`);
+});
