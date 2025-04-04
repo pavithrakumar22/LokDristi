@@ -78,7 +78,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         return;
       }
 
-      const response = await fetch("http://localhost:5001/order", {
+      const response = await fetch("http://localhost:5000/order", {
         method: "POST",
         body: JSON.stringify({
           amount: String(amount * 100),
