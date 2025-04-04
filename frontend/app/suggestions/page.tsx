@@ -9,8 +9,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white">
       <Navbar />
-      <Hero />
-      <FeatureSection />
 
       {/* Suggestion Box Section */}
       <section className="flex flex-col items-center justify-center py-10 bg-gray-100">

@@ -20,7 +20,7 @@ export default function SuggestionBox() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:5000/api/suggestions", {
+    const response = await fetch("http://localhost:5001/api/suggestions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),

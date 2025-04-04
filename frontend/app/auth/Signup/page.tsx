@@ -244,10 +244,10 @@ export default function SignupPage() {
               </motion.form>
             )}
           </CardContent>
-          <CardFooter className="flex justify-center border-t border-blue-100 bg-blue-50">
+          <CardFooter className="flex justify-center border-t border-blue-100 bg-blue-50 pt-3">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
-              <Link href="/login" className="text-blue-700 font-medium hover:underline">
+              <Link href="/auth/Login" className="text-blue-700 font-medium hover:underline">
                 Login
               </Link>
             </p>
