@@ -4,8 +4,15 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import { useRouter } from "next/navigation"
+
 
 const Hero = () => {
+  const router = useRouter()
+  const handleSignin = () => {
+    router.push("/auth/Signup")
+  }
+
   return (
     <div className="bg-gradient-to-b from-blue-50 to-white">
       <div className="container mx-auto px-4">
@@ -49,7 +56,7 @@ const Hero = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-wrap gap-4"
             >
-              <Button className="bg-blue-700 hover:bg-blue-800 text-white group">
+              <Button onClick={handleSignin} className="bg-blue-700 hover:bg-blue-800 text-white group">
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
