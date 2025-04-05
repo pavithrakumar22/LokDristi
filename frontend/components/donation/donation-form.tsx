@@ -62,6 +62,8 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
   const [showReceipt, setShowReceipt] = useState(false)
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [payementStatus, setPaymentStatus] = useState(false);
+  const [donations, setDonations] = useState([]);
+
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -201,8 +203,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 
   const resetForm = () => {
     setAmount(1000);
-    setCategory("");
-    setPhone(userData.phone); // or "" if you want to clear completely
+    setPhone(userData.phone);
     setOtp("");
     setOtpSent(false);
     setOtpVerified(false);
@@ -229,7 +230,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 100);
     doc.text(`Payment Status: Successful`, 20, 110);
 
-    doc.save("donation_receipt.pdf");
+    doc.save(`donation_receipt_${userData.name}.pdf`);
   }
 
   const donationCategories = [
@@ -242,6 +243,32 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
     { value: "digital-india", label: "Digital India" },
     { value: "skill-india", label: "Skill India" },
   ]
+  const aadhar = userData.aadhaarNumber;
+  interface Donation {
+    id: string;
+    amount: number;
+    category: string;
+    date: string;
+    paymentId: string;
+    orderId: string;
+    createdAt: string;
+  }
+
+  const getDonationsByAadhaar = async (aadhar: string): Promise<Donation[]> => {
+    try {
+      const res = await fetch(`http://localhost:5001/donations/${aadhar}`);
+      const data = await res.json();
+      setDonations(data);
+      console.log('Donations:', data);
+      return data;
+    } catch (err) {
+      console.error('Error fetching:', err);
+      throw err;
+    }
+  };
+  useEffect(() => {
+    getDonationsByAadhaar(aadhar);
+  }, [aadhar]);
 
   return (
     <>

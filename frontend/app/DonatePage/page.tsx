@@ -30,14 +30,7 @@ export default function DonatePage() {
       state: "Delhi",
       country: "India",
       pincode: "110091",
-    },
-    transactions: [
-      { id: "TXN123456", date: "2023-04-15", amount: 5000, category: "Disaster Relief", status: "Completed" },
-      { id: "TXN123457", date: "2023-03-10", amount: 2500, category: "Education", status: "Completed" },
-      { id: "TXN123458", date: "2023-02-22", amount: 10000, category: "Healthcare", status: "Completed" },
-      { id: "TXN123459", date: "2023-01-05", amount: 1500, category: "Rural Development", status: "Completed" },
-      { id: "TXN123460", date: "2022-12-25", amount: 7500, category: "PM Relief Fund", status: "Completed" },
-    ],
+    }
   }
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -94,7 +87,7 @@ const handleClose = () => {
 
             <Separator className="my-8" />
 
-            <TransactionHistory transactions={userData.transactions} />
+            <TransactionHistory aadharNumber={userData.aadhaarNumber} />
           </div>
 
           {/* Right Column - Donation Form and Ads */}

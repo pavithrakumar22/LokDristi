@@ -110,6 +110,22 @@ app.post('/donate', async (req, res) => {
     }
   });
 
+app.get('/donations/:aadhaarNumber', async (req, res) => {
+    try {
+        const { aadhaarNumber } = req.params;
+        const donations = await Donation.find({ aadhaarNumber });
+    
+        if (donations.length === 0) {
+          return res.status(404).json({ message: 'No donations found for this Aadhaar number.' });
+        }
+    
+        res.status(200).json(donations);
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+        res.status(500).json({ message: 'Server error' });
+      }
+});
+
 app.listen(PORT, () => {
     console.log("Listening on Port", PORT);
 });
