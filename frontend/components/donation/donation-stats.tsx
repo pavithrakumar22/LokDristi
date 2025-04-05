@@ -68,7 +68,7 @@ const DonationStats = () => {
     { name: "Karnataka", amount: 1800000 },
     { name: "Tamil Nadu", amount: 1600000 },
     { name: "Gujarat", amount: 1400000 },
-    { name: "Uttar Pradesh", amount: 1200000 },
+    { name: "UP", amount: 1200000 },
     { name: "West Bengal", amount: 1000000 },
     { name: "Others", amount: 3400000 },
   ]
