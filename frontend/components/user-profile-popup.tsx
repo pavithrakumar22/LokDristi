@@ -139,7 +139,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                       ? "Verification Pending"
                       : "Unverified"}
                 </Badge>
-                <span className="text-sm text-blue-100">ID: LD{Math.floor(Math.random() * 1000000)}</span>
+                {/* <span className="text-sm text-blue-100">ID: LD{Math.floor(Math.random() * 1000000)}</span> */}
               </motion.div>
             </div>
           </div>
@@ -181,14 +181,14 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Email Address</p>
-                    <p className="font-medium flex items-center">
+                    <div className="font-medium flex items-center">
                       {userData.email}
                       {userData.verificationStatus === "verified" && (
                         <Badge variant="outline" className="ml-2 bg-green-50 text-green-600 border-green-200 text-xs">
                           Verified
                         </Badge>
                       )}
-                    </p>
+                    </div>
                   </motion.div>
 
                   <motion.div
@@ -198,14 +198,14 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Phone Number</p>
-                    <p className="font-medium flex items-center">
+                    <div className="font-medium flex items-center">
                       {userData.phone}
                       {userData.verificationStatus === "verified" && (
                         <Badge variant="outline" className="ml-2 bg-green-50 text-green-600 border-green-200 text-xs">
                           Verified
                         </Badge>
                       )}
-                    </p>
+                    </div>
                   </motion.div>
 
                   <motion.div
@@ -352,12 +352,6 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
           </TabsContent>
         </Tabs>
 
-        {/* Footer */}
-        {/* <div className="p-6 bg-gray-50 border-t flex justify-end">
-          <Button onClick={onClose} className="bg-blue-600 hover:bg-blue-700">
-            Close
-          </Button>
-        </div> */}
       </motion.div>
     </div>
   )
