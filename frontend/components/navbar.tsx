@@ -18,6 +18,7 @@ import {
   Bell,
   Settings,
   Lightbulb,
+  HandCoins
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -70,7 +71,7 @@ const Navbar = () => {
     { name: "Updates", href: "#updates", icon: <FileText size={18} /> },
     { name: "Voting", href: "#voting", icon: <Vote size={18} /> },
     { name: "Legal Help", href: "#chatbot", icon: <HelpCircle size={18} /> },
-    { name: "Alerts", href: "#alerts", icon: <Bell size={18} /> },
+    { name: "Donate", href: "/DonatePage", icon: <HandCoins size={18} /> },
     { name: "Suggestions", href: "/suggestions", icon: <Lightbulb size={18} /> },
   ]
 
@@ -182,7 +183,12 @@ const Navbar = () => {
 
             <div className="flex items-center space-x-4">
               <div className="hidden md:block">
-                <DropdownMenu>
+              <Button onClick={() => setShowProfilePopup(true)} variant="outline" className="flex items-center text-blue-600 border-blue-600">
+                      <User size={16} className="mr-2" />
+                      My Account
+                      {/* <ChevronDown size={16} className="ml-2" /> */}
+                    </Button>
+                {/* <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="flex items-center text-blue-600 border-blue-600">
                       <User size={16} className="mr-2" />
@@ -209,7 +215,7 @@ const Navbar = () => {
                       <span>Logout</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
               </div>
 
               <div className="md:hidden">

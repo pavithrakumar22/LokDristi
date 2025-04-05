@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
+import jsPDF from "jspdf";
 
 interface UserData {
   name: string
@@ -78,7 +79,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/order", {
+      const response = await fetch("http://localhost:5001/order", {
         method: "POST",
         body: JSON.stringify({
           amount: String(amount * 100),
@@ -113,10 +114,26 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
           console.log(jsonResponse);
           if(jsonResponse.msg === "success") {
             try {
+              const donationPayload = {
+                name: userData.name,
+                aadhaarNumber: userData.aadhaarNumber,
+                phone: userData.phone,
+                email: userData.email,
+                address: userData.address,
+                category,
+                amount,
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+              };
+          
+              await axios.post('http://localhost:5001/donate', donationPayload);
               setPaymentStatus(true);
               console.log(response);
+              setShowSuccess(true);
+              resetForm();
             } catch (error) {
               console.error(error);
+              resetForm();
             }
           }
         },
@@ -175,21 +192,44 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
     // In a real app, this would process the payment
     setShowConfirmation(false)
     initiatePayment()
-    if(payementStatus) {
-      setShowSuccess(true);
-    }
+    resetForm()
+    // if(payementStatus) {
+    //   setShowSuccess(true);
+    // }
   }
 
+
+  const resetForm = () => {
+    setAmount(1000);
+    setCategory("");
+    setPhone(userData.phone); // or "" if you want to clear completely
+    setOtp("");
+    setOtpSent(false);
+    setOtpVerified(false);
+    setAgreedToTerms(false);
+    setShowConfirmation(false);
+  };
+  
+  
+  
+
   const handleDownloadReceipt = () => {
-    // In a real app, this would download a receipt
-    setShowReceipt(false)
-    // Mock download functionality
-    const link = document.createElement("a")
-    link.href = "#"
-    link.download = "donation_receipt.pdf"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Donation Receipt", 20, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Name: ${userData.name}`, 20, 40);
+    doc.text(`Aadhaar Number: ${userData.aadhaarNumber}`, 20, 50);
+    doc.text(`Phone: ${userData.phone}`, 20, 60);
+    doc.text(`Email: ${userData.email}`, 20, 70);
+    doc.text(`Category: ${category}`, 20, 80);
+    doc.text(`Amount Donated: ₹${amount}`, 20, 90);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 100);
+    doc.text(`Payment Status: Successful`, 20, 110);
+
+    doc.save("donation_receipt.pdf");
   }
 
   const donationCategories = [

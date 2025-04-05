@@ -56,7 +56,7 @@ const handleClose = () => {
       <Navbar />
 
       {/* Page Header */}
-      <div className="bg-blue-700 text-white py-12">
+      <div className="bg-blue-600 text-white py-12">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

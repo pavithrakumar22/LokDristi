@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import authRoutes from './routes/auth.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
+import Donation from './models/Transaction.js';
 
 
 dotenv.config()
@@ -74,6 +75,38 @@ app.post("/order/validate", async (req, res) => {
         res.status(500).send("Error");
     }
 });
+
+app.post('/donate', async (req, res) => {
+    try {
+        const {
+            name,
+            aadhaarNumber,
+            phone,
+            email,
+            address,
+            category,
+            amount,
+            paymentId,
+            orderId
+          } = req.body;
+          const newDonation = new Donation({
+            name,
+            aadhaarNumber,
+            phone,
+            email,
+            address,
+            category,
+            amount,
+            paymentId,
+            orderId
+          });
+          const savedDonation = await newDonation.save();
+          res.status(201).json(savedDonation);
+    } catch (error) {
+        console.error("Error saving donation:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 app.listen(PORT, () => {
     console.log("Listening on Port", PORT);
