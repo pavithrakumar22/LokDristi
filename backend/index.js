@@ -5,8 +5,10 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import mongoose from "mongoose";
 import connectDB from "./config/db.js";
-import authRoutes from './routes/auth.js';
+import authRoutes from './routes/authRoutes.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
+import Donation from './models/Transaction.js';
+import grievanceRoutes from './routes/grievanceRoutes.js'
 
 
 dotenv.config()
@@ -24,7 +26,8 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/suggestions', suggestionRoutes);
+app.use('/api/grievances', grievanceRoutes);
+
 
 app.post('/order', async (req, res) => {
     try {
@@ -73,6 +76,54 @@ app.post("/order/validate", async (req, res) => {
         console.error(err);
         res.status(500).send("Error");
     }
+});
+
+app.post('/donate', async (req, res) => {
+    try {
+        const {
+            name,
+            aadhaarNumber,
+            phone,
+            email,
+            address,
+            category,
+            amount,
+            paymentId,
+            orderId
+          } = req.body;
+          const newDonation = new Donation({
+            name,
+            aadhaarNumber,
+            phone,
+            email,
+            address,
+            category,
+            amount,
+            paymentId,
+            orderId
+          });
+          const savedDonation = await newDonation.save();
+          res.status(201).json(savedDonation);
+    } catch (error) {
+        console.error("Error saving donation:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+app.get('/donations/:aadhaarNumber', async (req, res) => {
+    try {
+        const { aadhaarNumber } = req.params;
+        const donations = await Donation.find({ aadhaarNumber });
+    
+        if (donations.length === 0) {
+          return res.status(404).json({ message: 'No donations found for this Aadhaar number.' });
+        }
+    
+        res.status(200).json(donations);
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+        res.status(500).json({ message: 'Server error' });
+      }
 });
 
 app.listen(PORT, () => {
