@@ -5,8 +5,9 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import mongoose from "mongoose";
 import connectDB from "./config/db.js";
-import authRoutes from './routes/auth.js';
+import authRoutes from './routes/authRoutes.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
+import grievanceRoutes from './routes/grievanceRoutes.js'
 
 
 dotenv.config()
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/grievances', grievanceRoutes);
 
 
 app.post('/order', async (req, res) => {
