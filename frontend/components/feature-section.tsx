@@ -26,8 +26,15 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AnimatedCard } from "@/components/ui/animated-card"
 import { Timeline } from "@/components/ui/timeline"
+import { useRouter } from "next/navigation"
 
 const FeatureSection = () => {
+
+const router = useRouter()
+  const handleSignin = () => {
+    router.push("/auth/Signup")
+  }
+
   const features = [
     {
       id: "grievances",
@@ -281,7 +288,7 @@ const FeatureSection = () => {
                       </div>
 
                       <div className="pt-4 flex justify-center">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">Learn More</Button>
+                        <Button onClick={handleSignin} className="bg-blue-600 hover:bg-blue-700 text-white">Learn More</Button>
                       </div>
                     </div>
                   </AnimatedCard>
