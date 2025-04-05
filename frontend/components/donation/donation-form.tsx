@@ -402,22 +402,25 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                   <span>Donation Amount (₹)</span>
                   <span className="text-xs text-gray-500">Min: ₹1,000 | Max: ₹100,000</span>
                 </Label>
-                <Input id="amount" type="number" value={amount} onChange={handleAmountChange} />
+                {/* <Input id="amount" type="number" value={amount} onChange={handleAmountChange} /> */}
 
-                <div className="flex justify-between mt-2">
-                  {[1000, 5000, 10000, 25000].map((amt) => (
+                <div className="flex justify-between mt-2 flex-wrap">
+                  {[1000, 5000, 10000, 25000, 50000, 75000, 100000].map((amt) => (
                     <Button
                       key={amt}
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => setAmount(amt)}
-                      className={amount === amt ? "bg-blue-100 border-blue-300" : ""}
+                      className={amount === amt ? "bg-blue-100 border-blue-300 m-3" : "m-3"}
                     >
-                      ₹{amt.toLocaleString()}
+                      ₹{amt.toLocaleString("en-IN")}
                     </Button>
                   ))}
                 </div>
+                {amount && (
+                  <strong className="text-lg text-blue-600 mt-2">You selected: ₹{amount.toLocaleString("en-IN")}</strong>
+                )}
               </div>
 
               {/* Terms and Conditions */}

@@ -30,6 +30,8 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
   const [sortField, setSortField] = useState<keyof Transaction>("date")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
   const [donations, setDonations] = useState<Donation[]>([]);
+  const [selectedTransaction, setSelectedTransaction] = useState<Donation | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSort = (field: keyof Transaction) => {
     if (field === sortField) {
@@ -136,12 +138,17 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
     document.body.removeChild(link);
   };
   
-  
 
   const handleViewReceipt = (id: string) => {
-    // In a real app, this would open the receipt
-    alert(`Viewing receipt for transaction ${id}`)
-  }
+    const transaction = donations.find((d) => d.orderId === id);
+    setSelectedTransaction(transaction || null);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedTransaction(null);
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-IN", {
@@ -285,7 +292,7 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => handleViewReceipt(transaction.id)}>
+                        <Button variant="ghost" size="sm" onClick={() => handleViewReceipt(transaction.orderId)}>
                           <FileText className="h-4 w-4 mr-1" />
                           Receipt
                         </Button>
@@ -302,7 +309,40 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
           </div>
         </CardContent>
       </Card>
+
+
+      
+
+      <motion.div
+        initial={{ opacity: 0, scale: 20 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+      >
+        {isModalOpen && selectedTransaction && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+          <h2 className="text-blue-700 text-xl font-semibold mb-4">Transaction Details</h2>
+          <div className="space-y-2 text-sm">
+            <p><strong>Name:</strong> {selectedTransaction.name}</p>
+            <p><strong>Aadhaar:</strong> {selectedTransaction.aadhaarNumber}</p>
+            <p><strong>Phone:</strong> {selectedTransaction.phone}</p>
+            <p><strong>Email:</strong> {selectedTransaction.email}</p>
+            <p><strong>Order ID:</strong> {selectedTransaction.orderId}</p>
+            <p><strong>Payment ID:</strong> {selectedTransaction.paymentId}</p>
+            <p><strong>Amount:</strong> ₹{selectedTransaction.amount}</p>
+            <p><strong>Category:</strong> {selectedTransaction.category}</p>
+            <p><strong>Date:</strong> {formatDate(selectedTransaction.createdAt)}</p>
+          </div>
+          <Button onClick={closeModal} className="mt-4 w-full">Close</Button>
+        </div>
+      </div>
+    )}
+      </motion.div>
+
     </motion.div>
+
+
   )
 }
 
