@@ -2,50 +2,59 @@ import User from '../models/user.js';
 import { sendOtp, generateToken } from '../services/authService.js';
 import bcrypt from 'bcrypt';
 
+const formatPhone = (phone) => {
+  return phone.startsWith('+91') ? phone : `+91${phone}`;
+};
+
 const signup = async (req, res) => {
   try {
-    const { aadhaarNo, phone, pincode } = req.body;
+    const { name, aadhaarNo, phone, email, pincode } = req.body;
+    const formattedPhone = formatPhone(phone);
 
-    if (!aadhaarNo || !phone || !pincode) {
-      return res.status(400).json({ message: 'All fields are required' });
+    const existingUser = await User.findOne({ phone: formattedPhone });
+    if (existingUser && existingUser.isVerified) {
+      return res.status(400).json({ message: 'User already exists and is verified' });
     }
 
-    const existingUser = await User.findOne({ phone });
-    if (existingUser && existingUser.isVerified)
-      return res.status(400).json({ message: 'User already exists and is verified' });
-
-    const otp = await sendOtp(phone);
+    const otp = await sendOtp(formattedPhone);
     const hashedOtp = await bcrypt.hash(otp, 10);
 
     if (existingUser) {
+      existingUser.name = name;
       existingUser.aadhaarNo = aadhaarNo;
+      existingUser.email = email;
       existingUser.pincode = pincode;
       existingUser.otp = hashedOtp;
       existingUser.otpExpires = new Date(Date.now() + 10 * 60000);
       await existingUser.save();
     } else {
       const user = new User({
+        name,
         aadhaarNo,
-        phone,
+        phone: formattedPhone,
+        email,
         pincode,
         otp: hashedOtp,
-        otpExpires: new Date(Date.now() + 10 * 60000),
+        otpExpires: new Date(Date.now() + 10 * 60000)
       });
       await user.save();
     }
 
     res.status(200).json({ message: 'OTP sent for verification' });
   } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({ message: 'Error in signup', error: error?.message || error });
+    res.status(500).json({ message: 'Error in signup', error });
   }
 };
 
 const verifySignupOtp = async (req, res) => {
   try {
     const { phone, otp } = req.body;
-    const user = await User.findOne({ phone });
-    if (!user || !user.otpExpires || user.otpExpires < new Date()) return res.status(400).json({ message: 'Invalid or expired OTP' });
+    const formattedPhone = formatPhone(phone);
+
+    const user = await User.findOne({ phone: formattedPhone });
+    if (!user || !user.otpExpires || user.otpExpires < new Date()) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
 
     const validOtp = await bcrypt.compare(otp, user.otp);
     if (!validOtp) return res.status(400).json({ message: 'Invalid OTP' });
@@ -64,10 +73,14 @@ const verifySignupOtp = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { phone } = req.body;
-    const user = await User.findOne({ phone });
-    if (!user || !user.isVerified) return res.status(400).json({ message: 'User not found or not verified' });
+    const formattedPhone = formatPhone(phone);
 
-    const otp = await sendOtp(phone);
+    const user = await User.findOne({ phone: formattedPhone });
+    if (!user || !user.isVerified) {
+      return res.status(400).json({ message: 'User not found or not verified' });
+    }
+
+    const otp = await sendOtp(formattedPhone);
     const hashedOtp = await bcrypt.hash(otp, 10);
 
     user.otp = hashedOtp;
@@ -83,8 +96,12 @@ const login = async (req, res) => {
 const verifyLoginOtp = async (req, res) => {
   try {
     const { phone, otp } = req.body;
-    const user = await User.findOne({ phone });
-    if (!user || !user.otpExpires || user.otpExpires < new Date()) return res.status(400).json({ message: 'Invalid or expired OTP' });
+    const formattedPhone = formatPhone(phone);
+
+    const user = await User.findOne({ phone: formattedPhone });
+    if (!user || !user.otpExpires || user.otpExpires < new Date()) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
 
     const validOtp = await bcrypt.compare(otp, user.otp);
     if (!validOtp) return res.status(400).json({ message: 'Invalid OTP' });

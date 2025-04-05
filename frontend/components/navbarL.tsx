@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import {
   Menu,
   X,
@@ -17,6 +18,7 @@ import {
   HelpCircle,
   Bell,
   Settings,
+  Lightbulb,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,6 +35,7 @@ const Navbar = () => {
   const [fontSize, setFontSize] = useState(16)
   const [language, setLanguage] = useState("English")
   const [scrolled, setScrolled] = useState(false)
+  const router = useRouter()
 
   const increaseFontSize = () => {
     setFontSize((prev) => Math.min(prev + 2, 24))
@@ -47,6 +50,10 @@ const Navbar = () => {
   const changeLanguage = (lang: string) => {
     setLanguage(lang)
     // In a real app, this would trigger language change functionality
+  }
+
+  const handleSignin =() => {
+    router.push("/auth/Signup")
   }
 
   useEffect(() => {
@@ -68,6 +75,7 @@ const Navbar = () => {
     { name: "Voting", href: "#voting", icon: <Vote size={18} /> },
     { name: "Legal Help", href: "#chatbot", icon: <HelpCircle size={18} /> },
     { name: "Alerts", href: "#alerts", icon: <Bell size={18} /> },
+    { name: "Suggestions", href: "/suggestions", icon: <Lightbulb size={18} /> },
   ]
 
   return (
@@ -188,7 +196,7 @@ const Navbar = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu> */}
-                <Button variant="outline" className="flex items-center text-blue-800 border-blue-900">
+                <Button onClick={handleSignin} variant="outline" className="flex items-center text-blue-800 border-blue-900">
                   <User size={16} className="mr-2" />
                   Login/Signup
                   </Button>

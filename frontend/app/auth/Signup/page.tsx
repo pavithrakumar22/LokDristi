@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label"
 export default function SignupPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
+    name: "",
+    email: "",
     aadhaarNo: "",
     phone: "",
     pincode: "",
@@ -26,7 +28,7 @@ export default function SignupPage() {
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -148,6 +150,33 @@ export default function SignupPage() {
             {!otpSent ? (
               <form onSubmit={handleSendOtp} className="space-y-4">
                 <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="border-blue-200 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="border-blue-200 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="aadhaarNo">Aadhaar Number</Label>
                   <Input
                     id="aadhaarNo"
@@ -244,10 +273,10 @@ export default function SignupPage() {
               </motion.form>
             )}
           </CardContent>
-          <CardFooter className="flex justify-center border-t border-blue-100 bg-blue-50">
+          <CardFooter className="flex justify-center border-t border-blue-100 bg-blue-50 pt-3">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
-              <Link href="/login" className="text-blue-700 font-medium hover:underline">
+              <Link href="/auth/Login" className="text-blue-700 font-medium hover:underline">
                 Login
               </Link>
             </p>

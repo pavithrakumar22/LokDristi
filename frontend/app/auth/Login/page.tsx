@@ -53,6 +53,10 @@ export default function LoginPage() {
     }
   }
 
+  const handleSignup = () => {
+    router.push("/auth/Signup")
+  }
+
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     setVerifyLoading(true)
@@ -207,10 +211,10 @@ export default function LoginPage() {
               </motion.form>
             )}
           </CardContent>
-          <CardFooter className="flex justify-center border-t border-blue-100 bg-blue-50">
+          <CardFooter className="flex justify-center border-t border-blue-100 bg-blue-50 pt-3">
             <p className="text-sm text-gray-600">
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-blue-700 font-medium hover:underline">
+              <Link href="/auth/Signup" className="text-blue-700 font-medium hover:underline">
                 Sign Up
               </Link>
             </p>
