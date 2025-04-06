@@ -6,7 +6,7 @@ import User from '../models/user.js';
 dotenv.config();
 
 const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-const generateToken = (user) => jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+const generateToken = (user) => jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '6h' });
 
 const sendOtp = async (phone) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();

@@ -8,13 +8,16 @@ import connectDB from "./config/db.js";
 import authRoutes from './routes/authRoutes.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
 import Donation from './models/Transaction.js';
+import petitionRoutes from './routes/petitionRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
 import grievanceRoutes from './routes/grievanceRoutes.js'
 import User from './models/User.js';
 
 
 dotenv.config()
 const app = express()
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -28,7 +31,8 @@ app.get("/", (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/grievances', grievanceRoutes);
-
+app.use('/api/petitions', petitionRoutes);
+app.use('/api/projects', projectRoutes);
 
 app.post('/order', async (req, res) => {
     try {
