@@ -7,12 +7,13 @@ import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import authRoutes from './routes/authRoutes.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
+import grievanceRoutes from './routes/grievanceRoutes.js';
 import Donation from './models/Transaction.js';
-import grievanceRoutes from './routes/grievanceRoutes.js'
+import axios from "axios";
+import { isAdmin } from "./middleware/auth.js"; // ⬅️ Middleware to restrict to admin
 
-
-dotenv.config()
-const app = express()
+dotenv.config();
+const app = express();
 const PORT = process.env.PORT || 5001;
 
 app.use(express.json());
@@ -25,10 +26,12 @@ app.get("/", (req, res) => {
     res.send("LokDristi is running.....");
 });
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/grievances', grievanceRoutes);
+app.use('/api/suggestions', suggestionRoutes);
 
-
+// Razorpay Order Creation
 app.post('/order', async (req, res) => {
     try {
         const razorpay = new Razorpay({
@@ -55,6 +58,7 @@ app.post('/order', async (req, res) => {
     }
 });
 
+// Razorpay Payment Validation
 app.post("/order/validate", async (req, res) => {
     try {
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -78,6 +82,7 @@ app.post("/order/validate", async (req, res) => {
     }
 });
 
+// Save Donation Info
 app.post('/donate', async (req, res) => {
     try {
         const {
@@ -90,8 +95,8 @@ app.post('/donate', async (req, res) => {
             amount,
             paymentId,
             orderId
-          } = req.body;
-          const newDonation = new Donation({
+        } = req.body;
+        const newDonation = new Donation({
             name,
             aadhaarNumber,
             phone,
@@ -101,31 +106,44 @@ app.post('/donate', async (req, res) => {
             amount,
             paymentId,
             orderId
-          });
-          const savedDonation = await newDonation.save();
-          res.status(201).json(savedDonation);
+        });
+        const savedDonation = await newDonation.save();
+        res.status(201).json(savedDonation);
     } catch (error) {
         console.error("Error saving donation:", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
+});
 
+// Get Donations by Aadhaar
 app.get('/donations/:aadhaarNumber', async (req, res) => {
     try {
         const { aadhaarNumber } = req.params;
         const donations = await Donation.find({ aadhaarNumber });
-    
+
         if (donations.length === 0) {
-          return res.status(404).json({ message: 'No donations found for this Aadhaar number.' });
+            return res.status(404).json({ message: 'No donations found for this Aadhaar number.' });
         }
-    
+
         res.status(200).json(donations);
-      } catch (error) {
+    } catch (error) {
         console.error('Error fetching donations:', error);
         res.status(500).json({ message: 'Server error' });
-      }
+    }
+});
+
+// 🧠 Admin-only Sentiment Analysis
+app.post('/api/sentiment/analyze', isAdmin, async (req, res) => {
+    try {
+        const { text } = req.body;
+        const response = await axios.post("http://localhost:5002/analyze", { text }); // Flask service URL
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error("Sentiment Analysis Failed:", error.message);
+        res.status(500).json({ error: "Sentiment analysis failed" });
+    }
 });
 
 app.listen(PORT, () => {
-    console.log("Listening on Port", PORT);
+    console.log("LokDristi backend running on port", PORT);
 });
