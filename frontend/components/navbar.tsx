@@ -30,13 +30,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import UserProfilePopup from "./user-profile-popup"
+import { Language, useLanguage } from "@/app/contexts/language-context"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [fontSize, setFontSize] = useState(16)
-  const [language, setLanguage] = useState("English")
+  // const [language, setLanguage] = useState("English")
   const [scrolled, setScrolled] = useState(false)
   const [showProfilePopup, setShowProfilePopup] = useState(false)
+
+  const { language, setLanguage, t } = useLanguage()
 
   const increaseFontSize = () => {
     setFontSize((prev) => Math.min(prev + 2, 24))
@@ -48,9 +51,9 @@ const Navbar = () => {
     document.documentElement.style.fontSize = `${fontSize}px`
   }
 
-  const changeLanguage = (lang: string) => {
-    setLanguage(lang)
-    // In a real app, this would trigger language change functionality
+  const changeLanguage = (lang: Language) => {
+      setLanguage(lang)
+      // In a real app, this would trigger language change functionality
   }
 
   useEffect(() => {
@@ -67,12 +70,12 @@ const Navbar = () => {
   }, [])
 
   const navLinks = [
-    { name: "Grievances", href: "#grievances", icon: <MessageSquare size={18} /> },
-    { name: "Updates", href: "#updates", icon: <FileText size={18} /> },
-    { name: "Voting", href: "#voting", icon: <Vote size={18} /> },
-    { name: "Legal Help", href: "#chatbot", icon: <HelpCircle size={18} /> },
-    { name: "Donate", href: "/DonatePage", icon: <HandCoins size={18} /> },
-    { name: "Suggestions", href: "/suggestions", icon: <Lightbulb size={18} /> },
+    { name: t("grievances"), href: "#grievances", icon: <MessageSquare size={18} /> },
+    { name: t("updates"), href: "#updates", icon: <FileText size={18} /> },
+    { name: t("voting"), href: "#voting", icon: <Vote size={18} /> },
+    { name: t("legalHelp"), href: "#chatbot", icon: <HelpCircle size={18} /> },
+    { name: t("donate"), href: "/DonatePage", icon: <HandCoins size={18} /> },
+    { name: t("suggestions"), href: "/suggestions", icon: <Lightbulb size={18} /> },
   ]
 
   // Mock user data
@@ -92,6 +95,10 @@ const Navbar = () => {
       pincode: "110091",
     },
   }
+
+  const supportedLanguages: Language[] = [
+    "English", "हिंदी", "தமிழ்", "తెలుగు", "ಕನ್ನಡ", "മലയാളം", "বাংলা"
+  ]
 
   return (
     <>
@@ -125,13 +132,11 @@ const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => changeLanguage("English")}>English</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("हिंदी")}>हिंदी</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("தமிழ்")}>தமிழ்</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("తెలుగు")}>తెలుగు</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("ಕನ್ನಡ")}>ಕನ್ನಡ</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("മലയാളം")}>മലയാളം</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("বাংলা")}>বাংলা</DropdownMenuItem>
+            {supportedLanguages.map((lang) => (
+                <DropdownMenuItem key={lang} onClick={() => changeLanguage(lang)}>
+                  {lang}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

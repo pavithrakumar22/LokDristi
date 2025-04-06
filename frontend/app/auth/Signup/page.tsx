@@ -88,6 +88,7 @@ export default function SignupPage() {
       }
 
       setSuccess("Account created successfully!")
+      sessionStorage.setItem('user', formData.aadhaarNo);
       setTimeout(() => {
         router.push("/auth/Login")
       }, 1500)

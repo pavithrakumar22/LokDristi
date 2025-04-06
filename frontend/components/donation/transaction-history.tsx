@@ -58,49 +58,61 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
     createdAt: string;
   }
   const getDonationsByAadhaar = async (aadhar: string): Promise<Donation[]> => {
-      try {
-        const res = await fetch(`${BASE_URL}/donations/${aadhar}`);
-        const data = await res.json();
-        setDonations(data);
-        console.log('Donations:', data);
-        return data;
-      } catch (err) {
-        console.error('Error fetching:', err);
-        throw err;
-      }
-    };
+    try {
+      const res = await fetch(`http://localhost:5001/donations/${aadhar}`);
+      const data = await res.json();
+      const validDonations = data.filter((donation: Donation) => donation.orderId && donation.createdAt);
+      setDonations(validDonations);
+      console.log("Valid Donations:", validDonations);
+      return validDonations;
+    } catch (err) {
+      console.error("Error fetching:", err);
+      throw err;
+    }
+  };
     useEffect(() => {
       getDonationsByAadhaar(aadhar);
-    }, []);
+    }, [aadhar]);
 
-  const filteredTransactions = donations.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const filteredTransactions = donations;
 
-  const handleDownloadStatement = async() => {
+  const handleDownloadStatement = async () => {
+    if (!donations.length) {
+      alert("No donations available to download.");
+      return;
+    }
+  
     const doc = new jsPDF();
-    const name = donations[0]?.name;
-  doc.setFontSize(16);
-  doc.text("Donations Report", 14, 20);
-  doc.text(`Name: ${name}`, 14, 30);
-  doc.text(`Aadhaar Number: ${aadhar}`, 14, 35);
-  const tableColumn = ["OrderId", "Date", "Amount", "Category"];
-
-  const tableRows = filteredTransactions.map((donation) => [
-    donation.orderId,
-    new Date(donation.createdAt).toLocaleDateString(),
-    donation.amount,
-    donation.category,
-  ]);
-
-  autoTable(doc, {
-    startY: 45,
-    head: [tableColumn],
-    body: tableRows,
-  });
-
-  await doc.save(`${name}_donations_report.pdf`);
-  alert("Transaction Statement downloaded successfully!");
-  }
-
+    const name = donations[0]?.name || "Unknown";
+    const validTransactions = donations.filter((donation) => donation.createdAt && donation.orderId);
+  
+    if (!validTransactions.length) {
+      alert("No valid transactions found.");
+      return;
+    }
+  
+    doc.setFontSize(16);
+    doc.text("Donations Report", 14, 20);
+    doc.text(`Name: ${name}`, 14, 30);
+    doc.text(`Aadhaar Number: ${aadhar}`, 14, 35);
+  
+    const tableColumn = ["OrderId", "Date", "Amount", "Category"];
+    const tableRows = validTransactions.map((donation) => [
+      donation.orderId,
+      new Date(donation.createdAt).toLocaleDateString() || "Invalid Date",
+      donation.amount,
+      donation.category,
+    ]);
+  
+    autoTable(doc, {
+      startY: 45,
+      head: [tableColumn],
+      body: tableRows,
+    });
+  
+    await doc.save(`${name}_donations_report.pdf`);
+    alert("Transaction Statement downloaded successfully!");
+  };
 
   const downloadDonationsAsCSV = (donations: any[]) => {
     if (!donations.length) return;
@@ -211,7 +223,7 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
         </CardHeader>
         <CardContent>
           <div className="rounded-md border h-96 overflow-auto">
-            <Table>
+            <Table key={donations.length}>
               <TableHeader>
                 <TableRow>
                   <TableHead className="cursor-pointer" onClick={() => handleSort("id")}>
@@ -267,41 +279,42 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTransactions.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                      No transactions found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredTransactions.map((transaction) => (
-                    <TableRow key={transaction.orderId}>
-                      <TableCell className="font-medium">{transaction.orderId.slice(6,)}</TableCell>
-                      <TableCell>{transaction.createdAt.slice(0, 10)}</TableCell>
-                      <TableCell className="text-right font-semibold">{formatCurrency(transaction.amount)}</TableCell>
-                      <TableCell>{transaction.category}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={
-                            transaction.orderId !== ""
-                              ? "bg-green-50 text-green-700 border-green-200"
-                              : "bg-yellow-50 text-yellow-700 border-yellow-200"
-                          }
-                        >
-                          {transaction.orderId !== "" ? "Completed" : "Pending"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => handleViewReceipt(transaction.orderId)}>
-                          <FileText className="h-4 w-4 mr-1" />
-                          Receipt
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
+  {/* Donations being rendered: {console.log(donations)} */}
+  {donations.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+        No transactions found
+      </TableCell>
+    </TableRow>
+  ) : (
+    donations.map((transaction) => (
+      <TableRow key={transaction.orderId}>
+        <TableCell className="font-medium">{transaction.orderId.slice(6)}</TableCell>
+        <TableCell>{transaction.createdAt.slice(0, 10)}</TableCell>
+        <TableCell className="text-right font-semibold">{formatCurrency(transaction.amount)}</TableCell>
+        <TableCell>{transaction.category}</TableCell>
+        <TableCell>
+          <Badge
+            variant="outline"
+            className={
+              transaction.orderId !== ""
+                ? "bg-green-50 text-green-700 border-green-200"
+                : "bg-yellow-50 text-yellow-700 border-yellow-200"
+            }
+          >
+            {transaction.orderId !== "" ? "Completed" : "Pending"}
+          </Badge>
+        </TableCell>
+        <TableCell className="text-right">
+          <Button variant="ghost" size="sm" onClick={() => handleViewReceipt(transaction.orderId)}>
+            <FileText className="h-4 w-4 mr-1" />
+            Receipt
+          </Button>
+        </TableCell>
+      </TableRow>
+    ))
+  )}
+</TableBody>
             </Table>
           </div>
 

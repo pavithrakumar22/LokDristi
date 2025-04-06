@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import Navbar from "@/components/navbar"
@@ -17,13 +17,51 @@ import { Separator } from "@/components/ui/separator"
 export default function DonatePage() {
   const [showTerms, setShowTerms] = useState(true)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [user, setUser] = useState<{ name?: string; aadhaarNumber?: string; phone?: string; email?: string } | null>(null);
+  const [error, setError] = useState('');
+  const [aadhaarNumber, setAadhaarNumber] = useState("")
 
   // Mock user data (in a real app, this would come from authentication)
+
+  useEffect(() => {
+    const storedAadhaar = sessionStorage.getItem("user")
+    if (storedAadhaar) {
+      setAadhaarNumber(storedAadhaar)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (aadhaarNumber) {
+      fetchUser()
+    }
+  }, [aadhaarNumber])
+
+  const fetchUser = async () => {
+    try {
+      const res = await fetch(`http://localhost:5001/user/${aadhaarNumber}`);
+      if (!res.ok) {
+        throw new Error('User not found');
+      }
+      const data = await res.json();
+      console.log(data)
+      setUser(data);
+      setError('');
+    } catch (err) {
+      setUser(null);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    }
+  };
+
+
   const userData = {
-    name: "Rahul Sharma",
-    aadhaarNumber: "1234 5678 9012",
-    phone: "9876543210",
-    email: "rahul.sharma@example.com",
+    name: user?.name || "Guest",
+    aadhaarNumber: user?.aadhaarNumber || aadhaarNumber || "",
+    phone: user?.phone || "9876543210",
+    email: user?.email || "",
     address: {
       place: "Mayur Vihar",
       district: "East Delhi",
@@ -87,7 +125,7 @@ const handleClose = () => {
 
             <Separator className="my-8" />
 
-            <TransactionHistory aadharNumber={userData.aadhaarNumber} />
+            <TransactionHistory aadharNumber={aadhaarNumber || ''} />
           </div>
 
           {/* Right Column - Donation Form and Ads */}
