@@ -50,6 +50,7 @@ export default function SuggestionBox() {
   const [showError, setShowError] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
   const [characterCount, setCharacterCount] = useState(0)
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
@@ -120,7 +121,7 @@ export default function SuggestionBox() {
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
       // Simulate API call
-      const response = await fetch("http://localhost:5001/api/suggestions", {
+      const response = await fetch(`${BASE_URL}/api/suggestions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
