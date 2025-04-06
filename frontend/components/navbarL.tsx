@@ -29,13 +29,17 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Language, useLanguage } from "@/app/contexts/language-context"
+
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [fontSize, setFontSize] = useState(16)
-  const [language, setLanguage] = useState("English")
+  // const [language, setLanguage] = useState("English")
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
+
+  const { language, setLanguage, t } = useLanguage()
 
   const increaseFontSize = () => {
     setFontSize((prev) => Math.min(prev + 2, 24))
@@ -47,10 +51,10 @@ const Navbar = () => {
     document.documentElement.style.fontSize = `${fontSize}px`
   }
 
-  const changeLanguage = (lang: string) => {
+  const changeLanguage = (lang: Language) => {
     setLanguage(lang)
     // In a real app, this would trigger language change functionality
-  }
+}
 
   const handleSignin =() => {
     router.push("/auth/Signup")
@@ -70,12 +74,16 @@ const Navbar = () => {
   }, [])
 
   const navLinks = [
-    { name: "Grievances", href: "#grievances", icon: <MessageSquare size={18} /> },
-    { name: "Updates", href: "#updates", icon: <FileText size={18} /> },
-    { name: "Voting", href: "#voting", icon: <Vote size={18} /> },
-    { name: "Legal Help", href: "#chatbot", icon: <HelpCircle size={18} /> },
-    { name: "Alerts", href: "#alerts", icon: <Bell size={18} /> },
-    { name: "Suggestions", href: "/suggestions", icon: <Lightbulb size={18} /> },
+    { name: t("Grievances"), href: "#grievances", icon: <MessageSquare size={18} /> },
+    { name: t("Updates"), href: "#updates", icon: <FileText size={18} /> },
+    { name: t("Voting"), href: "#voting", icon: <Vote size={18} /> },
+    { name: t("Legal Help"), href: "#chatbot", icon: <HelpCircle size={18} /> },
+    { name: t("Alerts"), href: "#alerts", icon: <Bell size={18} /> },
+    { name: t("Suggestions"), href: "#suggestions", icon: <Lightbulb size={18} /> },
+  ]
+
+  const supportedLanguages: Language[] = [
+    "English", "हिंदी", "தமிழ்", "తెలుగు", "ಕನ್ನಡ", "മലയാളം", "বাংলা"
   ]
 
   return (
@@ -110,13 +118,11 @@ const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => changeLanguage("English")}>English</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("हिंदी")}>हिंदी</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("தமிழ்")}>தமிழ்</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("తెలుగు")}>తెలుగు</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("ಕನ್ನಡ")}>ಕನ್ನಡ</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("മലയാളം")}>മലയാളം</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("বাংলা")}>বাংলা</DropdownMenuItem>
+            {supportedLanguages.map((lang) => (
+                <DropdownMenuItem key={lang} onClick={() => changeLanguage(lang)}>
+                  {lang}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
