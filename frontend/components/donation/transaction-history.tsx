@@ -32,6 +32,7 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<Donation | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const handleSort = (field: keyof Transaction) => {
     if (field === sortField) {
@@ -58,7 +59,7 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
   }
   const getDonationsByAadhaar = async (aadhar: string): Promise<Donation[]> => {
       try {
-        const res = await fetch(`http://localhost:5001/donations/${aadhar}`);
+        const res = await fetch(`${BASE_URL}/donations/${aadhar}`);
         const data = await res.json();
         setDonations(data);
         console.log('Donations:', data);
