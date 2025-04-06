@@ -312,10 +312,11 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="flex space-x-2">
                   <Input
+                  disabled
                     id="phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    disabled={otpVerified}
+                    // disabled={otpVerified}
                     className={otpVerified ? "bg-gray-50" : ""}
                   />
                   {!otpSent && !otpVerified && (
