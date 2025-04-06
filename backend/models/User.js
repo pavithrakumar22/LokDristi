@@ -12,4 +12,6 @@ const userSchema = new mongoose.Schema({
   otpExpires: { type: Date },
 });
 
-export default mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+export default User;

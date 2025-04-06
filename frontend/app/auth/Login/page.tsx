@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import axios from "axios"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [aadhaar, setAadhaar] = useState('');
   const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const handleSendOtp = async (e: React.FormEvent) => {
@@ -81,6 +83,7 @@ export default function LoginPage() {
       }
 
       setSuccess("Login successful!")
+      fetchAadhaar();
       setTimeout(() => {
         router.push("/DonatePage")
       }, 1000)
@@ -90,6 +93,25 @@ export default function LoginPage() {
       setVerifyLoading(false)
     }
   }
+
+  const fetchAadhaar = async () => {
+    try {
+      const sanitizedPhone = phone.startsWith('+91') ? phone : `+91${phone}`;
+      const response = await axios.get(`${BASE_URL}/user/aadhaar/${sanitizedPhone}`);
+      setAadhaar(response.data.aadhaarNo);
+      sessionStorage.setItem('user', response.data.aadhaarNo);
+      setError('');
+    } catch (err) {
+      console.error(err);
+      setAadhaar('');
+      if (axios.isAxiosError(err) && err.response && err.response.status === 404) {
+        setError('User not found');
+      } else {
+        setError('Error fetching Aadhaar');
+      }
+    }
+  };
+  
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
