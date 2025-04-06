@@ -144,6 +144,40 @@ app.post('/api/sentiment/analyze', isAdmin, async (req, res) => {
     }
 });
 
+app.get('/user/:aadhaarNumber', async (req, res) => {
+    const aadhaarNo = req.params.aadhaarNumber; // <-- FIXED LINE
+  
+    try {
+      const user = await User.findOne({ aadhaarNo }); // aadhaarNo here refers to DB field
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
+  
+  app.get('/aadhaar/:phone', async (req, res) => {
+    const phone = req.params.phone;
+    console.log('Incoming phone:', phone); // 👀 Check this
+  
+    try {
+      const user = await User.findOne({ phone });
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      return res.status(200).json({ aadhaarNo: user.aadhaarNo });
+    } catch (error) {
+      console.error('Error fetching Aadhaar:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+
 app.listen(PORT, () => {
     console.log("LokDristi backend running on port", PORT);
 });

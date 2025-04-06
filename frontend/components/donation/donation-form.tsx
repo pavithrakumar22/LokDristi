@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { motion } from "framer-motion"
 import { CreditCard, CheckCircle2, Info } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -314,7 +314,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                   <Input
                   disabled
                     id="phone"
-                    value={phone}
+                    value={userData.phone}
                     onChange={(e) => setPhone(e.target.value)}
                     // disabled={otpVerified}
                     className={otpVerified ? "bg-gray-50" : ""}
