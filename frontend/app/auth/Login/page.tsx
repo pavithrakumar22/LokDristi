@@ -83,7 +83,7 @@ export default function LoginPage() {
       }
 
       setSuccess("Login successful!")
-      fetchAadhaar();
+      await fetchAadhaar();
       setTimeout(() => {
         router.push("/DonatePage")
       }, 1000)
@@ -97,7 +97,7 @@ export default function LoginPage() {
   const fetchAadhaar = async () => {
     try {
       const sanitizedPhone = phone.startsWith('+91') ? phone : `+91${phone}`;
-      const response = await axios.get(`${BASE_URL}/user/aadhaar/${sanitizedPhone}`);
+      const response = await axios.get(`${BASE_URL}/aadhaar/${sanitizedPhone}`);
       setAadhaar(response.data.aadhaarNo);
       sessionStorage.setItem('user', response.data.aadhaarNo);
       setError('');

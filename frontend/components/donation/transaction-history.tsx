@@ -59,11 +59,10 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
   }
   const getDonationsByAadhaar = async (aadhar: string): Promise<Donation[]> => {
     try {
-      const res = await fetch(`http://localhost:5001/donations/${aadhar}`);
+      const res = await fetch(`${BASE_URL}/donations/${aadhar}`);
       const data = await res.json();
       const validDonations = data.filter((donation: Donation) => donation.orderId && donation.createdAt);
       setDonations(validDonations);
-      console.log("Valid Donations:", validDonations);
       return validDonations;
     } catch (err) {
       console.error("Error fetching:", err);
@@ -74,7 +73,9 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
       getDonationsByAadhaar(aadhar);
     }, [aadhar]);
 
-  const filteredTransactions = donations;
+    const filteredTransactions = [...donations].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
   const handleDownloadStatement = async () => {
     if (!donations.length) {
@@ -279,42 +280,42 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-  {/* Donations being rendered: {console.log(donations)} */}
-  {donations.length === 0 ? (
-    <TableRow>
-      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-        No transactions found
-      </TableCell>
-    </TableRow>
-  ) : (
-    donations.map((transaction) => (
-      <TableRow key={transaction.orderId}>
-        <TableCell className="font-medium">{transaction.orderId.slice(6)}</TableCell>
-        <TableCell>{transaction.createdAt.slice(0, 10)}</TableCell>
-        <TableCell className="text-right font-semibold">{formatCurrency(transaction.amount)}</TableCell>
-        <TableCell>{transaction.category}</TableCell>
-        <TableCell>
-          <Badge
-            variant="outline"
-            className={
-              transaction.orderId !== ""
-                ? "bg-green-50 text-green-700 border-green-200"
-                : "bg-yellow-50 text-yellow-700 border-yellow-200"
-            }
-          >
-            {transaction.orderId !== "" ? "Completed" : "Pending"}
-          </Badge>
-        </TableCell>
-        <TableCell className="text-right">
-          <Button variant="ghost" size="sm" onClick={() => handleViewReceipt(transaction.orderId)}>
-            <FileText className="h-4 w-4 mr-1" />
-            Receipt
-          </Button>
-        </TableCell>
-      </TableRow>
-    ))
-  )}
-</TableBody>
+                {/* Donations being rendered: {console.log(donations)} */}
+                {filteredTransactions.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                      No transactions found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredTransactions.map((transaction) => (
+                    <TableRow key={transaction.orderId}>
+                      <TableCell className="font-medium">{transaction.orderId.slice(6)}</TableCell>
+                      <TableCell>{transaction.createdAt.slice(0, 10)}</TableCell>
+                      <TableCell className="text-right font-semibold">{formatCurrency(transaction.amount)}</TableCell>
+                      <TableCell>{transaction.category}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={
+                            transaction.orderId !== ""
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : "bg-yellow-50 text-yellow-700 border-yellow-200"
+                          }
+                        >
+                          {transaction.orderId !== "" ? "Completed" : "Pending"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" onClick={() => handleViewReceipt(transaction.orderId)}>
+                          <FileText className="h-4 w-4 mr-1" />
+                          Receipt
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
             </Table>
           </div>
 

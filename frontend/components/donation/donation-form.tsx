@@ -166,13 +166,16 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 
   const handleSendOtp = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/send-otp`, {
+      const res = await fetch(`${BASE_URL}/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: userData.phone }), // phone comes from userData
       });
+
+      console.log(res);
   
       const data = await res.json();
+      console.log(data);
       if (res.ok) {
         setOtpSent(true);
         alert("OTP sent successfully!");
@@ -189,7 +192,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 
   const handleVerifyOtp = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp`, {
+      const res = await fetch(`${BASE_URL}/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
