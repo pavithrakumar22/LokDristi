@@ -13,6 +13,8 @@ import Donation from './models/Transaction.js';
 import axios from "axios";
 import { isAdmin } from "./middleware/auth.js"; // ⬅️ Middleware to restrict to admin
 import twilio from "twilio";
+import chatRoutes from "./routes/chatRoutes.js"
+
 
 dotenv.config();
 const app = express();
@@ -38,6 +40,7 @@ app.get("/", (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/grievances', grievanceRoutes);
 app.use('/api/suggestions', suggestionRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Razorpay Order Creation
 app.post('/order', async (req, res) => {
