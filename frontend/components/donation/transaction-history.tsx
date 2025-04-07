@@ -59,7 +59,7 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
   }
   const getDonationsByAadhaar = async (aadhar: string): Promise<Donation[]> => {
     try {
-      const res = await fetch(`http://localhost:5001/donations/${aadhar}`);
+      const res = await fetch(`${BASE_URL}/donations/${aadhar}`);
       const data = await res.json();
       const validDonations = data.filter((donation: Donation) => donation.orderId && donation.createdAt);
       setDonations(validDonations);
