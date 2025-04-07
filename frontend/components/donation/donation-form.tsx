@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect, use } from "react"
 import { motion } from "framer-motion"
-import { CreditCard, CheckCircle2, Info } from "lucide-react"
+import { CreditCard, CheckCircle2, Info, User } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -114,7 +114,6 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
             }
           });
           const jsonResponse = await validateResponse.json();
-          console.log(jsonResponse);
           if(jsonResponse.msg === "success") {
             try {
               const donationPayload = {
@@ -141,12 +140,12 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
           }
         },
         prefill: {
-          name: "Sudharshan",
-          email: "example@gmail.com",
-          contact: "9392267649"
+          name: userData.name,
+          email: userData.email,
+          contact: userData.phone,
         },
         notes: {
-          address: "Razorpay Corporate Office"
+          address: "LokDhristi Official"
         },
         theme: {
           color: "#3399cc"
