@@ -171,7 +171,6 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         body: JSON.stringify({ phone: userData.phone }), // phone comes from userData
       });
 
-      console.log(res);
   
       const data = await res.json();
       console.log(data);

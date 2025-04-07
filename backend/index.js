@@ -12,6 +12,7 @@ import grievanceRoutes from './routes/grievanceRoutes.js';
 import Donation from './models/Transaction.js';
 import axios from "axios";
 import { isAdmin } from "./middleware/auth.js"; // ⬅️ Middleware to restrict to admin
+import twilio from "twilio";
 
 dotenv.config();
 const app = express();
@@ -19,8 +20,6 @@ const PORT = process.env.PORT || 5001;
 
 // --- setup ---
 dotenv.config();
-const app = express();
-const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
@@ -143,7 +142,7 @@ app.get('/donations/:aadhaarNumber', async (req, res) => {
 app.post('/api/sentiment/analyze', isAdmin, async (req, res) => {
     try {
         const { text } = req.body;
-        const response = await axios.post("http://localhost:5002/analyze", { text }); // Flask service URL
+        const response = await axios.post("http://localhost:5001/analyze", { text }); // Flask service URL
         res.status(200).json(response.data);
     } catch (error) {
         console.error("Sentiment Analysis Failed:", error.message);
@@ -153,7 +152,20 @@ app.post('/api/sentiment/analyze', isAdmin, async (req, res) => {
 
 // --- get user info by Aadhaar ---
 app.get('/user/:aadhaarNumber', async (req, res) => {
-  const aadhaarNo = req.params.aadhaarNumber;
+  try {
+    const aadhaarNo = req.params.aadhaarNumber;
+    const user = await Donation.findOne({ aadhaarNumber: aadhaarNo });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 app.listen(PORT, () => {
     console.log("LokDristi backend running on port", PORT);
