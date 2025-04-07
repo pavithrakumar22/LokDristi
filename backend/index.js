@@ -1,3 +1,4 @@
+// --- imports ---
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -16,14 +17,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// --- setup ---
+dotenv.config();
+const app = express();
+const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-
 connectDB();
 
+// --- twilio setup ---
+const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+const otpStore = {}; // In-memory OTP store (consider Redis for prod)
+
+// --- routes ---
 app.get("/", (req, res) => {
-    res.send("LokDristi is running.....");
+  res.send("LokDristi is running.....");
 });
 
 // Routes
@@ -33,53 +42,51 @@ app.use('/api/suggestions', suggestionRoutes);
 
 // Razorpay Order Creation
 app.post('/order', async (req, res) => {
-    try {
-        const razorpay = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_SECRET
-        });
+  try {
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_SECRET
+    });
 
-        const { amount, currency } = req.body;
-        const options = {
-            amount,
-            currency,
-            receipt: `receipt#${new Date().getTime()}`
-        };
+    const { amount, currency } = req.body;
+    const options = {
+      amount,
+      currency,
+      receipt: `receipt#${Date.now()}`
+    };
 
-        const order = await razorpay.orders.create(options);
-        if (!order) {
-            return res.status(500).send("Error creating order");
-        }
+    const order = await razorpay.orders.create(options);
+    if (!order) return res.status(500).send("Error creating order");
 
-        res.json(order);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error");
-    }
+    res.json(order);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error");
+  }
 });
 
 // Razorpay Payment Validation
 app.post("/order/validate", async (req, res) => {
-    try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-        const sha = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET);
-        sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
-        const digest = sha.digest("hex");
+    const sha = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET);
+    sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+    const digest = sha.digest("hex");
 
-        if (digest !== razorpay_signature) {
-            return res.status(400).json({ msg: "Transaction is not legit!" });
-        }
-
-        res.json({
-            msg: "success",
-            orderId: razorpay_order_id,
-            paymentId: razorpay_payment_id,
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error");
+    if (digest !== razorpay_signature) {
+      return res.status(400).json({ msg: "Transaction is not legit!" });
     }
+
+    res.json({
+      msg: "success",
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error");
+  }
 });
 
 // Save Donation Info
@@ -144,39 +151,9 @@ app.post('/api/sentiment/analyze', isAdmin, async (req, res) => {
     }
 });
 
+// --- get user info by Aadhaar ---
 app.get('/user/:aadhaarNumber', async (req, res) => {
-    const aadhaarNo = req.params.aadhaarNumber; // <-- FIXED LINE
-  
-    try {
-      const user = await User.findOne({ aadhaarNo }); // aadhaarNo here refers to DB field
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      res.json(user);
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });
-  
-  app.get('/aadhaar/:phone', async (req, res) => {
-    const phone = req.params.phone;
-    console.log('Incoming phone:', phone); // 👀 Check this
-  
-    try {
-      const user = await User.findOne({ phone });
-  
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-  
-      return res.status(200).json({ aadhaarNo: user.aadhaarNo });
-    } catch (error) {
-      console.error('Error fetching Aadhaar:', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-  
+  const aadhaarNo = req.params.aadhaarNumber;
 
 app.listen(PORT, () => {
     console.log("LokDristi backend running on port", PORT);

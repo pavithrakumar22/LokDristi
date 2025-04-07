@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect, use } from "react"
 import { motion } from "framer-motion"
-import { CreditCard, CheckCircle2, Info } from "lucide-react"
+import { CreditCard, CheckCircle2, Info, User } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -63,6 +63,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [payementStatus, setPaymentStatus] = useState(false);
   const [donations, setDonations] = useState([]);
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
 
   useEffect(() => {
@@ -81,7 +82,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         return;
       }
 
-      const response = await fetch("http://localhost:5001/order", {
+      const response = await fetch(`${BASE_URL}/order`, {
         method: "POST",
         body: JSON.stringify({
           amount: String(amount * 100),
@@ -105,7 +106,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         handler: async function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) {
           const body = { ...response };
 
-          const validateResponse = await fetch("http://localhost:5001/order/validate", {
+          const validateResponse = await fetch(`${BASE_URL}/order/validate`, {
             method: "POST",
             body: JSON.stringify(body),
             headers: {
@@ -113,7 +114,6 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
             }
           });
           const jsonResponse = await validateResponse.json();
-          console.log(jsonResponse);
           if(jsonResponse.msg === "success") {
             try {
               const donationPayload = {
@@ -128,7 +128,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                 orderId: response.razorpay_order_id,
               };
           
-              await axios.post('http://localhost:5001/donate', donationPayload);
+              await axios.post(`${BASE_URL}/donate`, donationPayload);
               setPaymentStatus(true);
               console.log(response);
               setShowSuccess(true);
@@ -140,12 +140,12 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
           }
         },
         prefill: {
-          name: "Sudharshan",
-          email: "example@gmail.com",
-          contact: "9392267649"
+          name: userData.name,
+          email: userData.email,
+          contact: userData.phone,
         },
         notes: {
-          address: "Razorpay Corporate Office"
+          address: "LokDhristi Official"
         },
         theme: {
           color: "#3399cc"
@@ -163,18 +163,57 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 
   };
 
+  const handleSendOtp = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: userData.phone }), // phone comes from userData
+      });
 
-  const handleSendOtp = () => {
-    // In a real app, this would send an OTP to the phone number
-    setOtpSent(true)
-  }
-
-  const handleVerifyOtp = () => {
-    // In a real app, this would verify the OTP
-    if (otp === "123456") {
-      setOtpVerified(true)
+      console.log(res);
+  
+      const data = await res.json();
+      console.log(data);
+      if (res.ok) {
+        setOtpSent(true);
+        alert("OTP sent successfully!");
+      } else {
+        alert(data.message || "Failed to send OTP");
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Server error. Please try again.");
     }
-  }
+  };
+  
+  
+
+  const handleVerifyOtp = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: userData.phone,
+          otp: otp,
+        }),
+      });
+  
+      const data = await res.json();
+      if (res.ok && data.message === "OTP verified") {
+        setOtpVerified(true);
+        alert("OTP verified successfully!");
+      } else {
+        alert("Invalid OTP. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      alert("Verification failed. Please try again.");
+    }
+  };
+  
+  
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseInt(e.target.value)
@@ -256,7 +295,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 
   const getDonationsByAadhaar = async (aadhar: string): Promise<Donation[]> => {
     try {
-      const res = await fetch(`http://localhost:5001/donations/${aadhar}`);
+      const res = await fetch(`${BASE_URL}/donations/${aadhar}`);
       const data = await res.json();
       setDonations(data);
       console.log('Donations:', data);
