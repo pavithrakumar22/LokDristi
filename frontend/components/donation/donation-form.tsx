@@ -164,18 +164,54 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 
   };
 
-
-  const handleSendOtp = () => {
-    // In a real app, this would send an OTP to the phone number
-    setOtpSent(true)
-  }
-
-  const handleVerifyOtp = () => {
-    // In a real app, this would verify the OTP
-    if (otp === "123456") {
-      setOtpVerified(true)
+  const handleSendOtp = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: userData.phone }), // phone comes from userData
+      });
+  
+      const data = await res.json();
+      if (res.ok) {
+        setOtpSent(true);
+        alert("OTP sent successfully!");
+      } else {
+        alert(data.message || "Failed to send OTP");
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Server error. Please try again.");
     }
-  }
+  };
+  
+  
+
+  const handleVerifyOtp = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: userData.phone,
+          otp: otp,
+        }),
+      });
+  
+      const data = await res.json();
+      if (res.ok && data.message === "OTP verified") {
+        setOtpVerified(true);
+        alert("OTP verified successfully!");
+      } else {
+        alert("Invalid OTP. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      alert("Verification failed. Please try again.");
+    }
+  };
+  
+  
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseInt(e.target.value)
