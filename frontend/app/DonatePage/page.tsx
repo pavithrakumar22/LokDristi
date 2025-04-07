@@ -38,7 +38,7 @@ export default function DonatePage() {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/user/${aadhaarNumber}`);
+      const res = await fetch(`http://localhost:5001/user/${aadhaarNumber}`);
       if (!res.ok) {
         throw new Error('User not found');
       }

@@ -171,7 +171,6 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         body: JSON.stringify({ phone: userData.phone }), // phone comes from userData
       });
 
-      console.log(res);
   
       const data = await res.json();
       console.log(data);
@@ -382,7 +381,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                       Verify
                     </Button>
                   </div>
-                  <p className="text-xs text-blue-600">OTP sent to {phone}. For demo, use 123456</p>
+                  <p className="text-xs text-blue-600">OTP sent to {phone}, Verify Now...</p>
                 </div>
               )}
 
