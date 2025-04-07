@@ -63,6 +63,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [payementStatus, setPaymentStatus] = useState(false);
   const [donations, setDonations] = useState([]);
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
 
   useEffect(() => {
@@ -81,7 +82,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         return;
       }
 
-      const response = await fetch("http://localhost:5001/order", {
+      const response = await fetch(`${BASE_URL}/order`, {
         method: "POST",
         body: JSON.stringify({
           amount: String(amount * 100),
@@ -105,7 +106,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         handler: async function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) {
           const body = { ...response };
 
-          const validateResponse = await fetch("http://localhost:5001/order/validate", {
+          const validateResponse = await fetch(`${BASE_URL}/order/validate`, {
             method: "POST",
             body: JSON.stringify(body),
             headers: {
@@ -128,7 +129,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                 orderId: response.razorpay_order_id,
               };
           
-              await axios.post('http://localhost:5001/donate', donationPayload);
+              await axios.post(`${BASE_URL}/donate`, donationPayload);
               setPaymentStatus(true);
               console.log(response);
               setShowSuccess(true);
@@ -256,7 +257,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 
   const getDonationsByAadhaar = async (aadhar: string): Promise<Donation[]> => {
     try {
-      const res = await fetch(`http://localhost:5001/donations/${aadhar}`);
+      const res = await fetch(`${BASE_URL}/donations/${aadhar}`);
       const data = await res.json();
       setDonations(data);
       console.log('Donations:', data);

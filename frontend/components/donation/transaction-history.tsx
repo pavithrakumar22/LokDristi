@@ -32,6 +32,7 @@ const TransactionHistory = ({ aadharNumber }: TransactionHistoryProps) => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<Donation | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const handleSort = (field: keyof Transaction) => {
     if (field === sortField) {
