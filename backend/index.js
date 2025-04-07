@@ -9,8 +9,7 @@ import authRoutes from './routes/authRoutes.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
 import Donation from './models/Transaction.js';
 import grievanceRoutes from './routes/grievanceRoutes.js'
-import User from './models/User.js';
-
+import User from "./models/User.js";
 
 dotenv.config()
 const app = express()
@@ -144,7 +143,6 @@ app.get('/user/:aadhaarNumber', async (req, res) => {
   
   app.get('/aadhaar/:phone', async (req, res) => {
     const phone = req.params.phone;
-    console.log('Incoming phone:', phone); // 👀 Check this
   
     try {
       const user = await User.findOne({ phone });
@@ -152,7 +150,6 @@ app.get('/user/:aadhaarNumber', async (req, res) => {
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
-  
       return res.status(200).json({ aadhaarNo: user.aadhaarNo });
     } catch (error) {
       console.error('Error fetching Aadhaar:', error);

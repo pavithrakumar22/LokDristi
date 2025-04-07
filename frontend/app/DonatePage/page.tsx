@@ -43,7 +43,6 @@ export default function DonatePage() {
         throw new Error('User not found');
       }
       const data = await res.json();
-      console.log(data)
       setUser(data);
       setError('');
     } catch (err) {
