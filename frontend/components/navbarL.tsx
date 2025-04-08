@@ -19,6 +19,7 @@ import {
   Bell,
   Settings,
   Lightbulb,
+  Columns4
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -77,6 +78,7 @@ const Navbar = () => {
     { name: t("Grievances"), href: "#grievances", icon: <MessageSquare size={18} /> },
     { name: t("Updates"), href: "#updates", icon: <FileText size={18} /> },
     { name: t("Voting"), href: "#voting", icon: <Vote size={18} /> },
+    { name: t("Petitions"), href: "#petitions", icon: <Columns4 size={18} /> },
     { name: t("Legal Help"), href: "#chatbot", icon: <HelpCircle size={18} /> },
     { name: t("Alerts"), href: "#alerts", icon: <Bell size={18} /> },
     { name: t("Suggestions"), href: "#suggestions", icon: <Lightbulb size={18} /> },

@@ -342,7 +342,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                     </Tooltip>
                   </TooltipProvider>
                 </Label>
-                <Input id="aadhaar" value={userData.aadhaarNumber} disabled className="bg-gray-50" />
+                <Input id="aadhaar" value={`${userData.aadhaarNumber.slice(0, 4)} ${userData.aadhaarNumber.slice(4, 8)} ${userData.aadhaarNumber.slice(8, 12)} ${userData.aadhaarNumber.slice(12, )}`} disabled className="bg-gray-50" />
                 <p className="text-xs text-gray-500">Auto-filled from your profile</p>
               </div>
 
@@ -374,7 +374,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                       id="otp"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
-                      placeholder="123456"
+                      placeholder="OTP"
                       maxLength={6}
                     />
                     <Button type="button" onClick={handleVerifyOtp} className="whitespace-nowrap">
@@ -443,7 +443,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                 </Label>
                 {/* <Input id="amount" type="number" value={amount} onChange={handleAmountChange} /> */}
 
-                <div className="flex justify-between mt-2 flex-wrap">
+                <div className="flex justify-between mt-2 mb-4 flex-wrap">
                   {[1000, 5000, 10000, 25000, 50000, 75000, 100000].map((amt) => (
                     <Button
                       key={amt}
@@ -458,7 +458,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                   ))}
                 </div>
                 {amount && (
-                  <strong className="text-lg text-blue-600 mt-2">You selected: ₹{amount.toLocaleString("en-IN")}</strong>
+                  <strong className="text-lg text-blue-600 mt-2">You've Chosen to Donate: ₹{amount.toLocaleString("en-IN")}</strong>
                 )}
               </div>
 

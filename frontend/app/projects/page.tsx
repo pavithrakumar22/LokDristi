@@ -3,13 +3,13 @@ import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
 import { FileText, Calendar, Users, Building, ArrowRight } from "lucide-react"
+import Navbar from "@/components/navbar"
+import Footer from "@/components/footer"
 
 export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      {/* <header className="bg-blue-700 text-white py-4">
-      </header> */}
+      <Navbar />
 
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-12 text-center">
@@ -191,6 +191,8 @@ export default function ProjectsPage() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
+
     </div>
   )
 }

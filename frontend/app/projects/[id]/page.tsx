@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileText, Calendar, Users, Building, MapPin, Clock, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
+import Navbar from "@/components/navbar"
+import Footer from "@/components/footer"
 
 export default function ProjectDetailPage({ params }: { params: { id: string } }) {
   // This would normally fetch the project data based on the ID
@@ -63,39 +65,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-blue-700 text-white py-4">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center space-x-1">
-            <a href="/" className="text-xl font-bold">
-              LokDhristi
-            </a>
-            <nav className="hidden md:flex ml-8 space-x-4">
-              <a href="/grievances" className="flex items-center">
-                <span className="mr-1">💬</span> Grievances
-              </a>
-              <a href="/updates" className="flex items-center">
-                <span className="mr-1">📋</span> Updates
-              </a>
-              <a href="/voting" className="flex items-center">
-                <span className="mr-1">🗳️</span> Voting
-              </a>
-              <a href="/legal-help" className="flex items-center">
-                <span className="mr-1">⚖️</span> Legal Help
-              </a>
-              <a href="/donate" className="flex items-center">
-                <span className="mr-1">🎁</span> Donate
-              </a>
-              <a href="/suggestions" className="flex items-center">
-                <span className="mr-1">📍</span> Suggestions
-              </a>
-            </nav>
-          </div>
-          <Button variant="outline" className="bg-white text-blue-700 hover:bg-blue-50">
-            My Account
-          </Button>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
@@ -378,6 +348,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
