@@ -20,8 +20,10 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+    allowedDevOrigins: ['http://192.168.29.85:3000'], // or whatever IP you're accessing from
+
   },
-}
+};
 
 mergeConfig(nextConfig, userConfig)
 

@@ -11,40 +11,40 @@ import suggestionRoutes from './routes/suggestionRoutes.js';
 import grievanceRoutes from './routes/grievanceRoutes.js';
 import Donation from './models/Transaction.js';
 import axios from "axios";
-import { isAdmin } from "./middleware/auth.js"; // ⬅️ Middleware to restrict to admin
+import { isAdmin } from "./middleware/auth.js"; // Admin middleware
 import twilio from "twilio";
-import chatRoutes from "./routes/chatRoutes.js"
+import chatRoutes from "./routes/chatRoutes.js";
 import User from "./models/user.js";
 import discussionRoutes from "./routes/discussionRoutes.js";
 import Discussion from './models/Discussion.js';
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// --- setup ---
-dotenv.config();
+// --- middleware setup ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 connectDB();
 
-// --- twilio setup ---
+// --- Twilio setup ---
 const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-const otpStore = {}; // In-memory OTP store (consider Redis for prod)
+const otpStore = {}; // In-memory OTP store (use Redis for production)
 
-// --- routes ---
+// --- base route ---
 app.get("/", (req, res) => {
   res.send("LokDristi is running.....");
 });
 
-// Routes
+// --- API routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/grievances', grievanceRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/discussions", discussionRoutes);
 
-
+// --- Create Razorpay Order ---
 app.post('/order', async (req, res) => {
   try {
     const razorpay = new Razorpay({
@@ -69,7 +69,7 @@ app.post('/order', async (req, res) => {
   }
 });
 
-// --- validate payment ---
+// --- Validate Razorpay Payment ---
 app.post("/order/validate", async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -93,7 +93,7 @@ app.post("/order/validate", async (req, res) => {
   }
 });
 
-// --- send OTP ---
+// --- Send OTP via Twilio ---
 app.post('/send-otp', async (req, res) => {
   const { phone } = req.body;
 
@@ -123,7 +123,7 @@ app.post('/send-otp', async (req, res) => {
   }
 });
 
-// --- verify OTP ---
+// --- Verify OTP ---
 app.post('/verify-otp', async (req, res) => {
   const { phone, otp } = req.body;
 
@@ -136,7 +136,7 @@ app.post('/verify-otp', async (req, res) => {
   res.status(200).json({ message: 'OTP verified' });
 });
 
-// --- donation with OTP check ---
+// --- Donation Endpoint ---
 app.post('/donate', async (req, res) => {
   try {
     const {
@@ -168,7 +168,7 @@ app.post('/donate', async (req, res) => {
     });
 
     const savedDonation = await newDonation.save();
-    delete otpStore[phone]; // Clean after donation
+    delete otpStore[phone]; // Clear after success
 
     res.status(201).json(savedDonation);
   } catch (error) {
@@ -177,7 +177,7 @@ app.post('/donate', async (req, res) => {
   }
 });
 
-// --- get donations by Aadhaar ---
+// --- Get donations by Aadhaar ---
 app.get('/donations/:aadhaarNumber', async (req, res) => {
   try {
     const { aadhaarNumber } = req.params;
@@ -194,7 +194,7 @@ app.get('/donations/:aadhaarNumber', async (req, res) => {
   }
 });
 
-// --- get user info by Aadhaar ---
+// --- Get user by Aadhaar ---
 app.get('/user/:aadhaarNumber', async (req, res) => {
   const aadhaarNo = req.params.aadhaarNumber;
 
@@ -210,12 +210,13 @@ app.get('/user/:aadhaarNumber', async (req, res) => {
   }
 });
 
-// --- get Aadhaar from phone ---
+// --- Get Aadhaar from phone ---
 app.get('/aadhaar/:phone', async (req, res) => {
   const phone = req.params.phone;
 
   try {
     const user = await User.findOne({ phone });
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -227,37 +228,19 @@ app.get('/aadhaar/:phone', async (req, res) => {
   }
 });
 
-// 🧠 Admin-only Sentiment Analysis
+// --- Admin Sentiment Analysis ---
 app.post('/api/sentiment/analyze', isAdmin, async (req, res) => {
-    try {
-        const { text } = req.body;
-        const response = await axios.post("http://localhost:5002/analyze", { text }); // Flask service URL
-        res.status(200).json(response.data);
-    } catch (error) {
-        console.error("Sentiment Analysis Failed:", error.message);
-        res.status(500).json({ error: "Sentiment analysis failed" });
-    }
-});
-
-// --- get user info by Aadhaar ---
-
-app.get('/aadhaar/:phone', async (req, res) => {
-  const phone = req.params.phone;
-
   try {
-    const user = await User.findOne({ phone });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    return res.status(200).json({ aadhaarNo: user.aadhaarNo });
+    const { text } = req.body;
+    const response = await axios.post("http://localhost:5002/analyze", { text }); // Flask URL
+    res.status(200).json(response.data);
   } catch (error) {
-    console.error('Error fetching Aadhaar:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Sentiment Analysis Failed:", error.message);
+    res.status(500).json({ error: "Sentiment analysis failed" });
   }
 });
 
+// --- Get location from PIN code ---
 app.post("/get-location", async (req, res) => {
   const { pincode } = req.body;
 
@@ -285,6 +268,8 @@ app.post("/get-location", async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 });
+
+// --- Seed sample discussion ---
 app.get("/api/seed-discussion", async (req, res) => {
   try {
     const existing = await Discussion.findById("123abc");
@@ -309,6 +294,7 @@ app.get("/api/seed-discussion", async (req, res) => {
   }
 });
 
+// --- start server ---
 app.listen(PORT, () => {
-    console.log("LokDristi backend running on port", PORT);
+  console.log("✅ LokDristi backend running on port", PORT);
 });
