@@ -15,8 +15,8 @@ import { isAdmin } from "./middleware/auth.js"; // ⬅️ Middleware to restrict
 import twilio from "twilio";
 import chatRoutes from "./routes/chatRoutes.js"
 import User from "./models/user.js";
-
-
+import discussionRoutes from "./routes/discussionRoutes.js";
+import Discussion from './models/Discussion.js';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -47,6 +47,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/grievances', grievanceRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/discussions", discussionRoutes);
+
 
 <<<<<<< HEAD
 app.post('/sample-convert', async (req, res) => {
@@ -355,6 +357,29 @@ app.post("/get-location", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: "Something went wrong" });
+  }
+});
+app.get("/api/seed-discussion", async (req, res) => {
+  try {
+    const existing = await Discussion.findById("123abc");
+    if (existing) {
+      return res.status(400).json({ message: "Discussion already exists" });
+    }
+
+    const sampleDiscussion = new Discussion({
+      _id: "123abc",
+      title: "How can we improve sanitation in rural areas?",
+      content: "Let's come together and discuss sustainable solutions for public health and hygiene.",
+      upvotes: 0,
+      downvotes: 0,
+      comments: []
+    });
+
+    const saved = await sampleDiscussion.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    console.error("Seeding error:", err.message);
+    res.status(500).json({ error: "Failed to seed discussion" });
   }
 });
 
