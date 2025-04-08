@@ -14,6 +14,7 @@ import axios from "axios";
 import { isAdmin } from "./middleware/auth.js"; // ⬅️ Middleware to restrict to admin
 import twilio from "twilio";
 import chatRoutes from "./routes/chatRoutes.js"
+import User from "./models/user.js";
 
 
 dotenv.config();
@@ -167,6 +168,23 @@ app.get('/user/:aadhaarNumber', async (req, res) => {
   } catch (error) {
     console.error("Error fetching user info:", error);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get('/aadhaar/:phone', async (req, res) => {
+  const phone = req.params.phone;
+
+  try {
+    const user = await User.findOne({ phone });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.status(200).json({ aadhaarNo: user.aadhaarNo });
+  } catch (error) {
+    console.error('Error fetching Aadhaar:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

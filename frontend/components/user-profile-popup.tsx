@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { X, User, MapPin, Mail, Shield, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -33,6 +33,9 @@ interface UserProfilePopupProps {
 }
 
 const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) => {
+  const [user, setUser] = useState<UserData | null>(null)
+  const [error, setError] = useState<string>("")
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
   // Close on escape key
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
@@ -71,6 +74,26 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
 
   if (!isOpen) return null
 
+  const aadhaarNumber = userData.aadhaarNumber;
+  const fetchUser = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/user/${aadhaarNumber}`);
+      if (!res.ok) {
+        throw new Error('User not found');
+      }
+      const data = await res.json();
+      setUser(data);
+      setError('');
+    } catch (err) {
+      setUser(null);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="absolute inset-0" onClick={onClose} />
@@ -100,8 +123,8 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
               transition={{ delay: 0.2 }}
             >
               <Avatar className="h-20 w-20 border-4 border-white">
-                <AvatarImage src="/placeholder.svg?height=80&width=80" alt={userData.name} />
-                <AvatarFallback className="text-2xl bg-blue-700">{getInitials(userData.name)}</AvatarFallback>
+                <AvatarImage src="/placeholder.svg?height=80&width=80" alt={user?.name} />
+                <AvatarFallback className="text-2xl bg-blue-700">{getInitials(user?.name || "")}</AvatarFallback>
               </Avatar>
             </motion.div>
 
@@ -112,7 +135,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                 transition={{ delay: 0.1 }}
                 className="text-2xl font-bold"
               >
-                {userData.name}
+                {user?.name}
               </motion.h2>
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -171,7 +194,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Full Name</p>
-                    <p className="font-medium">{userData.name}</p>
+                    <p className="font-medium">{user?.name}</p>
                   </motion.div>
 
                   <motion.div
@@ -182,7 +205,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                   >
                     <p className="text-sm text-gray-500">Email Address</p>
                     <div className="font-medium flex items-center">
-                      {userData.email}
+                      {user?.email}
                       {userData.verificationStatus === "verified" && (
                         <Badge variant="outline" className="ml-2 bg-green-50 text-green-600 border-green-200 text-xs">
                           Verified
@@ -199,7 +222,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                   >
                     <p className="text-sm text-gray-500">Phone Number</p>
                     <div className="font-medium flex items-center">
-                      {userData.phone}
+                      {user?.phone}
                       {userData.verificationStatus === "verified" && (
                         <Badge variant="outline" className="ml-2 bg-green-50 text-green-600 border-green-200 text-xs">
                           Verified
@@ -215,7 +238,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Aadhaar Number</p>
-                    <p className="font-medium">{userData.aadhaarNumber}</p>
+                    <p className="font-medium">{user?.aadhaarNumber}</p>
                   </motion.div>
                 </div>
               </div>
@@ -237,7 +260,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Place/Locality</p>
-                    <p className="font-medium">{userData.address.place}</p>
+                    <p className="font-medium">{user?.address.place}</p>
                   </motion.div>
 
                   <motion.div
@@ -247,7 +270,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">District</p>
-                    <p className="font-medium">{userData.address.district}</p>
+                    <p className="font-medium">{user?.address.district}</p>
                   </motion.div>
 
                   <motion.div
@@ -257,7 +280,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">State</p>
-                    <p className="font-medium">{userData.address.state}</p>
+                    <p className="font-medium">{user?.address.state}</p>
                   </motion.div>
 
                   <motion.div
@@ -267,7 +290,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Pincode</p>
-                    <p className="font-medium">{userData.address.pincode}</p>
+                    <p className="font-medium">{user?.address.pincode}</p>
                   </motion.div>
 
                   <motion.div
@@ -277,7 +300,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1 md:col-span-2"
                   >
                     <p className="text-sm text-gray-500">Country</p>
-                    <p className="font-medium">{userData.address.country}</p>
+                    <p className="font-medium">{user?.address.country}</p>
                   </motion.div>
                 </div>
               </div>
@@ -299,7 +322,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Date Joined</p>
-                    <p className="font-medium">{formatDate(userData.dateJoined)}</p>
+                    <p className="font-medium">{formatDate(user?.dateJoined || "")}</p>
                   </motion.div>
 
                   <motion.div
