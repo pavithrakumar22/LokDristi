@@ -24,3 +24,5 @@ blockchain/build/
 # Ignore system files
 .DS_Store
 Thumbs.db
+node_modules
+node_modules
