@@ -10,8 +10,8 @@ export default function Home() {
       <Navbar />
       <Hero />
       <FeatureSection />
+      <ChatbotButton />
       <Footer />
-      {/* <ChatbotButton /> */}
     </main>
   )
 }

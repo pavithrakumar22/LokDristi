@@ -4,7 +4,7 @@ import express from "express";
 const router = express.Router();
 
 // 🔗 Replace with your actual ngrok URL
-const COLAB_API_URL = "https://cd5f-34-32-188-91.ngrok-free.app/chat";
+const COLAB_API_URL = "https://4131-34-106-248-186.ngrok-free.app/chat";
 
 router.post("/", async (req, res) => {
   const { query } = req.body;
