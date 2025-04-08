@@ -7,7 +7,7 @@ export default function DiscussionDetail() {
   const [thread, setThread] = useState<any>(null);
 
   useEffect(() => {
-    fetch(`/api/discussions/${id}`)
+    fetch(`http://localhost:5001/api/discussions/${id}`)
       .then((res) => res.json())
       .then((data) => setThread(data));
   }, [id]);

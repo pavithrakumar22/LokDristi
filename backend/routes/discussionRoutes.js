@@ -15,7 +15,7 @@ router.get("/seed-discussion", async (req, res) => {
     });
 
     const saved = await discussion.save();
-    res.status(201).json(saved); // ✅ Return the _id here!
+    res.status(201).json(saved);
   } catch (error) {
     console.error("Seeding error:", error.message);
     res.status(500).json({ error: "Failed to seed discussion" });

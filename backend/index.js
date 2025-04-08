@@ -28,14 +28,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 connectDB();
 
-<<<<<<< HEAD
-connectDB().then(() => console.log("✅ MongoDB Connected Successfully!"));
-
-=======
 // --- twilio setup ---
 const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 const otpStore = {}; // In-memory OTP store (consider Redis for prod)
->>>>>>> 919f684e1c3a5330803ac7f3c9f7f13adb182021
 
 // --- routes ---
 app.get("/", (req, res) => {
@@ -50,75 +45,6 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/discussions", discussionRoutes);
 
 
-<<<<<<< HEAD
-app.post('/sample-convert', async (req, res) => {
-    try {
-        console.log("🔹 Received request:", req.body);
-
-        const razorpay = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_SECRET
-        });
-
-        const { username, amount, currency } = req.body;
-        if (!username || !amount || !currency) {
-            console.log("❌ Missing required fields");
-            return res.status(400).json({ error: "Missing required fields" });
-        }
-
-        console.log("🛠️ Creating order...");
-        const options = {
-            amount,
-            currency,
-            receipt: `receipt#${new Date().getTime()}`
-        };
-
-        const order = await razorpay.orders.create(options);
-        if (!order) {
-            console.log("❌ Error creating order");
-            return res.status(500).send("Error creating order");
-        }
-
-        console.log("✅ Order created:", order);
-
-        let transaction = await Transaction.findOne({ username });
-        console.log("🔍 Transaction found:", transaction);
-
-        if (!transaction) {
-            console.log("🆕 No previous transaction found, creating new...");
-            transaction = new Transaction({
-                username,
-                orders: []
-            });
-        }
-
-        transaction.orders.push(order);
-        await transaction.save();
-        console.log("✅ Transaction saved successfully");
-
-        const coinValue = amount / 10;
-        let userCoins = await Coins.findOne({ username });
-        console.log("🔍 User Coins found:", userCoins);
-
-        if (!userCoins) {
-            console.log("🆕 No user coins found, creating new...");
-            userCoins = new Coins({
-                username,
-                coins: 0
-            });
-        }
-
-        userCoins.coins += coinValue;
-        await userCoins.save();
-        console.log("✅ Coins updated successfully");
-
-        res.json({ order, coins: userCoins.coins });
-    } catch (err) {
-        console.error("❌ Error:", err);
-        res.status(500).send("Error");
-    }
-});
-=======
 app.post('/order', async (req, res) => {
   try {
     const razorpay = new Razorpay({
@@ -386,4 +312,3 @@ app.get("/api/seed-discussion", async (req, res) => {
 app.listen(PORT, () => {
     console.log("LokDristi backend running on port", PORT);
 });
->>>>>>> 919f684e1c3a5330803ac7f3c9f7f13adb182021
