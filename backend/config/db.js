@@ -3,12 +3,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log("MONGO_URI:", process.env.MONGO_URI); // should print your URI
-
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB Connected ✅");
+    await mongoose.connect(process.env.MONGODB_URI).then(() => {
+      console.log("MongoDB connected successfully");
+    });
   } catch (error) {
     console.error("MongoDB connection failed:", error);
     process.exit(1);

@@ -72,7 +72,7 @@ const Navbar = () => {
   }, [])
 
   const navLinks = [
-    { name: t("grievances"), href: "#grievances", icon: <MessageSquare size={18} /> },
+    { name: t("grievances"), href: "/grievances", icon: <MessageSquare size={18} /> },
     { name: t("updates"), href: "#updates", icon: <FileText size={18} /> },
     { name: t("voting"), href: "#voting", icon: <Vote size={18} /> },
     { name: t("Petitions"), href: "/petitions", icon: <Columns4 size={18} /> },
