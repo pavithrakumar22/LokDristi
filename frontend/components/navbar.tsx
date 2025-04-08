@@ -18,7 +18,9 @@ import {
   Bell,
   Settings,
   Lightbulb,
-  HandCoins
+  HandCoins,
+  FolderKanban,
+  Columns4
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -73,28 +75,29 @@ const Navbar = () => {
     { name: t("grievances"), href: "#grievances", icon: <MessageSquare size={18} /> },
     { name: t("updates"), href: "#updates", icon: <FileText size={18} /> },
     { name: t("voting"), href: "#voting", icon: <Vote size={18} /> },
-    { name: t("legalHelp"), href: "#chatbot", icon: <HelpCircle size={18} /> },
+    { name: t("Petitions"), href: "/petitions", icon: <Columns4 size={18} /> },
+    { name: t("Projects"), href: "/projects", icon: <FolderKanban size={18} /> },
     { name: t("donate"), href: "/DonatePage", icon: <HandCoins size={18} /> },
     { name: t("suggestions"), href: "/suggestions", icon: <Lightbulb size={18} /> },
   ]
 
   // Mock user data
-  const userData = {
-    name: "Rahul Sharma",
-    email: "rahul.sharma@example.com",
-    phone: "9876543210",
-    aadhaarNumber: "1234 5678 9012",
-    dateJoined: "2022-05-15",
-    lastLogin: "2023-04-03",
-    verificationStatus: "verified" as const,
-    address: {
-      place: "Mayur Vihar",
-      district: "East Delhi",
-      state: "Delhi",
-      country: "India",
-      pincode: "110091",
-    },
-  }
+  // const userData = {
+  //   name: "Rahul Sharma",
+  //   email: "rahul.sharma@example.com",
+  //   phone: "9876543210",
+  //   aadhaarNumber: "1234 5678 9012",
+  //   dateJoined: "2022-05-15",
+  //   lastLogin: "2023-04-03",
+  //   verificationStatus: "verified" as const,
+  //   address: {
+  //     place: "Mayur Vihar",
+  //     district: "East Delhi",
+  //     state: "Delhi",
+  //     country: "India",
+  //     pincode: "110091",
+  //   },
+  // }
 
   const supportedLanguages: Language[] = [
     "English", "हिंदी", "தமிழ்", "తెలుగు", "ಕನ್ನಡ", "മലയാളം", "বাংলা"
@@ -287,7 +290,7 @@ const Navbar = () => {
       </motion.nav>
 
       {/* User Profile Popup */}
-      <UserProfilePopup isOpen={showProfilePopup} onClose={() => setShowProfilePopup(false)} userData={userData} />
+      <UserProfilePopup isOpen={showProfilePopup} onClose={() => setShowProfilePopup(false)} />
     </>
   )
 }

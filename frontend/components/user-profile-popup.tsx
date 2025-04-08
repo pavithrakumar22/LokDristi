@@ -8,6 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import axios from "axios";
+
 
 interface UserData {
   name: string
@@ -15,6 +17,7 @@ interface UserData {
   phone: string
   aadhaarNo: string
   dateJoined: string
+  pincode: string
   lastLogin: string
   verificationStatus: "verified" | "pending" | "unverified"
   address: {
@@ -26,16 +29,93 @@ interface UserData {
   }
 }
 
+interface LocationData {
+  place: string;
+  district: string;
+  state: string;
+  country: string;
+}
+
 interface UserProfilePopupProps {
   isOpen: boolean
   onClose: () => void
-  userData: UserData
 }
 
-const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) => {
+const UserProfilePopup = ({ isOpen, onClose }: UserProfilePopupProps) => {
   const [user, setUser] = useState<UserData | null>(null)
   const [error, setError] = useState<string>("")
+  const [location, setLocation] = useState<LocationData | null>(null);
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+
+
+  const userData = {
+    name: user?.name || "Guest",
+    aadhaarNumber: user?.aadhaarNo || "",
+    dateJoined: "3 April 2023",
+    lastLogin: "8 April 2023",
+    verificationStatus: "verified" as const,
+    phone: user?.phone || "9876543210",
+    email: user?.email || "",
+    address: {
+      place: location?.place || "Laxmi Nagar",
+      district: location?.district || "East Delhi",
+      state: location?.state || "Delhi",
+      country: location?.country || "India",
+      pincode: user?.pincode || "110092",
+    }
+  }
+
+  const pincode = user?.pincode || "";
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      setError("");
+      setLocation(null);
+  
+      if (pincode.length !== 6 || !/^\d{6}$/.test(pincode)) {
+        setError("Enter a valid 6-digit pincode");
+        return;
+      }
+  
+      try {
+        const res = await axios.post("http://localhost:5001/get-location", { pincode });
+        setLocation(res.data);
+      } catch (err: any) {
+        setError(err.response?.data?.error || "Something went wrong");
+      }
+    };
+  
+    if (pincode) {
+      fetchLocation();
+    }
+  }, [pincode]);
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const aadhaarNumber = sessionStorage.getItem("user");
+        const res = await fetch(`${BASE_URL}/user/${aadhaarNumber}`);
+        if (!res.ok) {
+          throw new Error("User not found");
+        }
+        const data = await res.json();
+        setUser(data);
+        setError("");
+      } catch (err) {
+        setUser(null);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+      }
+    };
+  
+    if (isOpen) {
+      fetchUser();
+    }
+  }, [isOpen, BASE_URL]);
+
   // Close on escape key
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
@@ -74,26 +154,6 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
 
   if (!isOpen) return null
 
-  const aadhaarNumber = sessionStorage.getItem('user');;
-  const fetchUser = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/user/${aadhaarNumber}`);
-      if (!res.ok) {
-        throw new Error('User not found');
-      }
-      const data = await res.json();
-      setUser(data);
-      setError('');
-    } catch (err) {
-      setUser(null);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
-    }
-  };
-  fetchUser();
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -124,7 +184,6 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
               transition={{ delay: 0.2 }}
             >
               <Avatar className="h-20 w-20 border-4 border-white">
-                <AvatarImage src="/frontend/public/user.svg?height=80&width=80" alt={user?.name} />
                 <AvatarFallback className="text-2xl bg-blue-700">{getInitials(user?.name || "")}</AvatarFallback>
               </Avatar>
             </motion.div>
@@ -261,7 +320,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Place/Locality</p>
-                    <p className="font-medium">{userData.address.place}</p>
+                    <p className="font-medium">{location?.place}</p>
                   </motion.div>
 
                   <motion.div
@@ -271,7 +330,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">District</p>
-                    <p className="font-medium">{userData.address.district}</p>
+                    <p className="font-medium">{location?.district}</p>
                   </motion.div>
 
                   <motion.div
@@ -281,7 +340,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">State</p>
-                    <p className="font-medium">{userData.address.state}</p>
+                    <p className="font-medium">{location?.district}</p>
                   </motion.div>
 
                   <motion.div
@@ -301,7 +360,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1 md:col-span-2"
                   >
                     <p className="text-sm text-gray-500">Country</p>
-                    <p className="font-medium">{userData.address.country}</p>
+                    <p className="font-medium">{location?.country}</p>
                   </motion.div>
                 </div>
               </div>
