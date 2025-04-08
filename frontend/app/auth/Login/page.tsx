@@ -59,11 +59,45 @@ export default function LoginPage() {
     router.push("/auth/Signup")
   }
 
+  // const handleVerifyOtp = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   setVerifyLoading(true)
+  //   setError("")
+
+  //   try {
+  //     const response = await fetch(`${BASE_URL}/api/auth/verify-login`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         phone,
+  //         otp,
+  //       }),
+  //     })
+
+  //     const data = await response.json()
+
+  //     if (!response.ok) {
+  //       throw new Error(data.message || "Failed to verify OTP")
+  //     }
+
+  //     setSuccess("Login successful!")
+  //     await fetchAadhaar();
+  //     setTimeout(() => {
+  //       router.push("/DonatePage")
+  //     }, 1000)
+  //   } catch (err: any) {
+  //     setError(err.message || "Something went wrong")
+  //   } finally {
+  //     setVerifyLoading(false)
+  //   }
+  // }
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     setVerifyLoading(true)
     setError("")
-
+  
     try {
       const response = await fetch(`${BASE_URL}/api/auth/verify-login`, {
         method: "POST",
@@ -75,17 +109,25 @@ export default function LoginPage() {
           otp,
         }),
       })
-
+  
       const data = await response.json()
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Failed to verify OTP")
       }
-
+  
       setSuccess("Login successful!")
+  
+      // Store token in localStorage after successful login
+      localStorage.setItem('token', data.token);  // Store token
+      // localStorage.setItem('userId', data.userId);    // Store user ID (optional)
+  
+      // Fetch Aadhaar (if needed)
       await fetchAadhaar();
+  
+      // Optionally, you can redirect after storing the token and fetching Aadhaar
       setTimeout(() => {
-        router.push("/DonatePage")
+        router.push("/DonatePage")  // Redirect to the next page
       }, 1000)
     } catch (err: any) {
       setError(err.message || "Something went wrong")
@@ -93,6 +135,7 @@ export default function LoginPage() {
       setVerifyLoading(false)
     }
   }
+  
 
   const fetchAadhaar = async () => {
     try {
