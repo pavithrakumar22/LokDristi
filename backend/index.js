@@ -15,7 +15,7 @@ import { isAdmin } from "./middleware/auth.js"; // ⬅️ Middleware to restrict
 import twilio from "twilio";
 import chatRoutes from "./routes/chatRoutes.js"
 import User from "./models/user.js";
-
+import discussionRoutes from "./routes/discussionRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -42,6 +42,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/grievances', grievanceRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/discussions", discussionRoutes);
+
 
 app.post('/order', async (req, res) => {
   try {
