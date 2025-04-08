@@ -43,7 +43,6 @@ app.use('/api/grievances', grievanceRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use("/api/chat", chatRoutes);
 
-// Razorpay Order Creation
 app.post('/order', async (req, res) => {
   try {
     const razorpay = new Razorpay({
@@ -68,7 +67,7 @@ app.post('/order', async (req, res) => {
   }
 });
 
-// Razorpay Payment Validation
+// --- validate payment ---
 app.post("/order/validate", async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -92,54 +91,138 @@ app.post("/order/validate", async (req, res) => {
   }
 });
 
-// Save Donation Info
-app.post('/donate', async (req, res) => {
-    try {
-        const {
-            name,
-            aadhaarNumber,
-            phone,
-            email,
-            address,
-            category,
-            amount,
-            paymentId,
-            orderId
-        } = req.body;
-        const newDonation = new Donation({
-            name,
-            aadhaarNumber,
-            phone,
-            email,
-            address,
-            category,
-            amount,
-            paymentId,
-            orderId
-        });
-        const savedDonation = await newDonation.save();
-        res.status(201).json(savedDonation);
-    } catch (error) {
-        console.error("Error saving donation:", error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+// --- send OTP ---
+app.post('/send-otp', async (req, res) => {
+  const { phone } = req.body;
+
+  if (!phone) {
+    return res.status(400).json({ error: "Phone number is required" });
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  try {
+    await client.messages.create({
+      body: `Your OTP for LokDristi donation is: ${otp}`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: phone
+    });
+
+    otpStore[phone] = {
+      otp,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+      verified: false
+    };
+
+    res.status(200).json({ message: 'OTP sent successfully' });
+  } catch (error) {
+    console.error('Twilio OTP error:', error?.message || error);
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
 });
 
-// Get Donations by Aadhaar
-app.get('/donations/:aadhaarNumber', async (req, res) => {
-    try {
-        const { aadhaarNumber } = req.params;
-        const donations = await Donation.find({ aadhaarNumber });
+// --- verify OTP ---
+app.post('/verify-otp', async (req, res) => {
+  const { phone, otp } = req.body;
 
-        if (donations.length === 0) {
-            return res.status(404).json({ message: 'No donations found for this Aadhaar number.' });
-        }
+  const record = otpStore[phone];
+  if (!record) return res.status(400).json({ error: 'OTP not requested' });
+  if (Date.now() > record.expiresAt) return res.status(400).json({ error: 'OTP expired' });
+  if (otp !== record.otp) return res.status(400).json({ error: 'Invalid OTP' });
 
-        res.status(200).json(donations);
-    } catch (error) {
-        console.error('Error fetching donations:', error);
-        res.status(500).json({ message: 'Server error' });
+  otpStore[phone].verified = true;
+  res.status(200).json({ message: 'OTP verified' });
+});
+
+// --- donation with OTP check ---
+app.post('/donate', async (req, res) => {
+  try {
+    const {
+      name,
+      aadhaarNumber,
+      phone,
+      email,
+      address,
+      category,
+      amount,
+      paymentId,
+      orderId
+    } = req.body;
+
+    if (!otpStore[phone] || !otpStore[phone].verified) {
+      return res.status(403).json({ error: 'OTP verification required' });
     }
+
+    const newDonation = new Donation({
+      name,
+      aadhaarNumber,
+      phone,
+      email,
+      address,
+      category,
+      amount,
+      paymentId,
+      orderId
+    });
+
+    const savedDonation = await newDonation.save();
+    delete otpStore[phone]; // Clean after donation
+
+    res.status(201).json(savedDonation);
+  } catch (error) {
+    console.error("Error saving donation:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// --- get donations by Aadhaar ---
+app.get('/donations/:aadhaarNumber', async (req, res) => {
+  try {
+    const { aadhaarNumber } = req.params;
+    const donations = await Donation.find({ aadhaarNumber });
+
+    if (donations.length === 0) {
+      return res.status(404).json({ message: 'No donations found for this Aadhaar number.' });
+    }
+
+    res.status(200).json(donations);
+  } catch (error) {
+    console.error('Error fetching donations:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// --- get user info by Aadhaar ---
+app.get('/user/:aadhaarNumber', async (req, res) => {
+  const aadhaarNo = req.params.aadhaarNumber;
+
+  try {
+    const user = await User.findOne({ aadhaarNo });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// --- get Aadhaar from phone ---
+app.get('/aadhaar/:phone', async (req, res) => {
+  const phone = req.params.phone;
+
+  try {
+    const user = await User.findOne({ phone });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.status(200).json({ aadhaarNo: user.aadhaarNo });
+  } catch (error) {
+    console.error('Error fetching Aadhaar:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // 🧠 Admin-only Sentiment Analysis
