@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { X, Upload, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
+import Navbar from "@/components/navbar"
+import Footer from "@/components/footer"
 
 const DEPARTMENTS = [
   "Urban Development",
@@ -111,10 +113,8 @@ export default function CreateProjectPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-blue-700 text-white py-4">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-        </div>
-      </header>
+      <Navbar />
+
 
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-12 text-center">
@@ -327,6 +327,7 @@ export default function CreateProjectPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Footer />
     </div>
   )
 }

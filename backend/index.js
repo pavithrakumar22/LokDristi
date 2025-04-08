@@ -231,7 +231,7 @@ app.get('/aadhaar/:phone', async (req, res) => {
 app.post('/api/sentiment/analyze', isAdmin, async (req, res) => {
     try {
         const { text } = req.body;
-        const response = await axios.post("http://localhost:5001/analyze", { text }); // Flask service URL
+        const response = await axios.post("http://localhost:5002/analyze", { text }); // Flask service URL
         res.status(200).json(response.data);
     } catch (error) {
         console.error("Sentiment Analysis Failed:", error.message);
@@ -255,6 +255,34 @@ app.get('/aadhaar/:phone', async (req, res) => {
   } catch (error) {
     console.error('Error fetching Aadhaar:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post("/get-location", async (req, res) => {
+  const { pincode } = req.body;
+
+  if (!pincode || typeof pincode !== "string" || !/^\d{6}$/.test(pincode)) {
+    return res.status(400).json({ error: "Invalid pincode format" });
+  }
+
+  try {
+    const response = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+    const data = response.data?.[0];
+
+    if (data.Status !== "Success") {
+      return res.status(404).json({ error: "Pincode not found" });
+    }
+
+    const postOffice = data.PostOffice?.[0];
+
+    res.json({
+      place: postOffice.Name,
+      district: postOffice.District,
+      state: postOffice.State,
+      country: postOffice.Country,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
