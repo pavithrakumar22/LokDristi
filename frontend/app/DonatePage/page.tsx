@@ -20,6 +20,8 @@ export default function DonatePage() {
   const [user, setUser] = useState<{ name?: string; aadhaarNumber?: string; phone?: string; email?: string } | null>(null);
   const [error, setError] = useState('');
   const [aadhaarNumber, setAadhaarNumber] = useState("")
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
+
 
   // Mock user data (in a real app, this would come from authentication)
 
@@ -38,7 +40,7 @@ export default function DonatePage() {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch(`http://localhost:5001/user/${aadhaarNumber}`);
+      const res = await fetch(`${BASE_URL}/user/${aadhaarNumber}`);
       if (!res.ok) {
         throw new Error('User not found');
       }
