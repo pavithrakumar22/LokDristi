@@ -1,16 +1,25 @@
 import express from "express";
-import {
-  createDiscussion,
-  getDiscussions,
-  addComment,
-  voteDiscussion,
-} from "../controllers/discussionController.js";
+import Discussion from "../models/Discussion.js";
 
 const router = express.Router();
 
-router.post("/", createDiscussion); // POST /api/discussions
-router.get("/", getDiscussions);    // GET  /api/discussions
-router.post("/:id/comment", addComment); // POST /api/discussions/:id/comment
-router.post("/:id/vote", voteDiscussion); // POST /api/discussions/:id/vote
+// ✅ Seeding route to create one sample discussion
+router.get("/seed-discussion", async (req, res) => {
+  try {
+    const discussion = new Discussion({
+      title: "How can we improve sanitation in rural areas?",
+      content: "Let's come together and discuss sustainable solutions for public health and hygiene.",
+      upvotes: 0,
+      downvotes: 0,
+      comments: []
+    });
+
+    const saved = await discussion.save();
+    res.status(201).json(saved); // ✅ Return the _id here!
+  } catch (error) {
+    console.error("Seeding error:", error.message);
+    res.status(500).json({ error: "Failed to seed discussion" });
+  }
+});
 
 export default router;
