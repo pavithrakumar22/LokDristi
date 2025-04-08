@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import axios from "axios"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [aadhaar, setAadhaar] = useState('');
   const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const handleSendOtp = async (e: React.FormEvent) => {
@@ -53,11 +55,49 @@ export default function LoginPage() {
     }
   }
 
+  const handleSignup = () => {
+    router.push("/auth/Signup")
+  }
+
+  // const handleVerifyOtp = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   setVerifyLoading(true)
+  //   setError("")
+
+  //   try {
+  //     const response = await fetch(`${BASE_URL}/api/auth/verify-login`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         phone,
+  //         otp,
+  //       }),
+  //     })
+
+  //     const data = await response.json()
+
+  //     if (!response.ok) {
+  //       throw new Error(data.message || "Failed to verify OTP")
+  //     }
+
+  //     setSuccess("Login successful!")
+  //     await fetchAadhaar();
+  //     setTimeout(() => {
+  //       router.push("/DonatePage")
+  //     }, 1000)
+  //   } catch (err: any) {
+  //     setError(err.message || "Something went wrong")
+  //   } finally {
+  //     setVerifyLoading(false)
+  //   }
+  // }
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     setVerifyLoading(true)
     setError("")
-
+  
     try {
       const response = await fetch(`${BASE_URL}/api/auth/verify-login`, {
         method: "POST",
@@ -69,16 +109,25 @@ export default function LoginPage() {
           otp,
         }),
       })
-
+  
       const data = await response.json()
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Failed to verify OTP")
       }
-
+  
       setSuccess("Login successful!")
+  
+      // Store token in localStorage after successful login
+      localStorage.setItem('token', data.token);  // Store token
+      // localStorage.setItem('userId', data.userId);    // Store user ID (optional)
+  
+      // Fetch Aadhaar (if needed)
+      await fetchAadhaar();
+  
+      // Optionally, you can redirect after storing the token and fetching Aadhaar
       setTimeout(() => {
-        router.push("/DonatePage")
+        router.push("/DonatePage")  // Redirect to the next page
       }, 1000)
     } catch (err: any) {
       setError(err.message || "Something went wrong")
@@ -86,6 +135,26 @@ export default function LoginPage() {
       setVerifyLoading(false)
     }
   }
+  
+
+  const fetchAadhaar = async () => {
+    try {
+      const sanitizedPhone = phone.startsWith('+91') ? phone : `+91${phone}`;
+      const response = await axios.get(`${BASE_URL}/aadhaar/${sanitizedPhone}`);
+      setAadhaar(response.data.aadhaarNo);
+      sessionStorage.setItem('user', response.data.aadhaarNo);
+      setError('');
+    } catch (err) {
+      console.error(err);
+      setAadhaar('');
+      if (axios.isAxiosError(err) && err.response && err.response.status === 404) {
+        setError('User not found');
+      } else {
+        setError('Error fetching Aadhaar');
+      }
+    }
+  };
+  
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
@@ -207,10 +276,10 @@ export default function LoginPage() {
               </motion.form>
             )}
           </CardContent>
-          <CardFooter className="flex justify-center border-t border-blue-100 bg-blue-50">
+          <CardFooter className="flex justify-center border-t border-blue-100 bg-blue-50 pt-3">
             <p className="text-sm text-gray-600">
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-blue-700 font-medium hover:underline">
+              <Link href="/auth/Signup" className="text-blue-700 font-medium hover:underline">
                 Sign Up
               </Link>
             </p>
@@ -220,4 +289,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import Navbar from "@/components/navbar"
@@ -17,27 +17,59 @@ import { Separator } from "@/components/ui/separator"
 export default function DonatePage() {
   const [showTerms, setShowTerms] = useState(true)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [user, setUser] = useState<{ name?: string; aadhaarNumber?: string; phone?: string; email?: string } | null>(null);
+  const [error, setError] = useState('');
+  const [aadhaarNumber, setAadhaarNumber] = useState("")
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
+
 
   // Mock user data (in a real app, this would come from authentication)
+
+  useEffect(() => {
+    const storedAadhaar = sessionStorage.getItem("user")
+    if (storedAadhaar) {
+      setAadhaarNumber(storedAadhaar)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (aadhaarNumber) {
+      fetchUser()
+    }
+  }, [aadhaarNumber])
+
+  const fetchUser = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/user/${aadhaarNumber}`);
+      if (!res.ok) {
+        throw new Error('User not found');
+      }
+      const data = await res.json();
+      setUser(data);
+      setError('');
+    } catch (err) {
+      setUser(null);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    }
+  };
+
+
   const userData = {
-    name: "Rahul Sharma",
-    aadhaarNumber: "1234 5678 9012",
-    phone: "9876543210",
-    email: "rahul.sharma@example.com",
+    name: user?.name || "Guest",
+    aadhaarNumber: user?.aadhaarNumber || aadhaarNumber || "",
+    phone: user?.phone || "9876543210",
+    email: user?.email || "",
     address: {
       place: "Mayur Vihar",
       district: "East Delhi",
       state: "Delhi",
       country: "India",
       pincode: "110091",
-    },
-    transactions: [
-      { id: "TXN123456", date: "2023-04-15", amount: 5000, category: "Disaster Relief", status: "Completed" },
-      { id: "TXN123457", date: "2023-03-10", amount: 2500, category: "Education", status: "Completed" },
-      { id: "TXN123458", date: "2023-02-22", amount: 10000, category: "Healthcare", status: "Completed" },
-      { id: "TXN123459", date: "2023-01-05", amount: 1500, category: "Rural Development", status: "Completed" },
-      { id: "TXN123460", date: "2022-12-25", amount: 7500, category: "PM Relief Fund", status: "Completed" },
-    ],
+    }
   }
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -56,7 +88,7 @@ const handleClose = () => {
       <Navbar />
 
       {/* Page Header */}
-      <div className="bg-blue-700 text-white py-12">
+      <div className="bg-blue-600 text-white py-12">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -94,7 +126,7 @@ const handleClose = () => {
 
             <Separator className="my-8" />
 
-            <TransactionHistory transactions={userData.transactions} />
+            <TransactionHistory aadharNumber={aadhaarNumber || ''} />
           </div>
 
           {/* Right Column - Donation Form and Ads */}

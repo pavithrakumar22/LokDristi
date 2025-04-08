@@ -17,6 +17,10 @@ import {
   HelpCircle,
   Bell,
   Settings,
+  Lightbulb,
+  HandCoins,
+  FolderKanban,
+  Columns4
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,12 +31,17 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import UserProfilePopup from "./user-profile-popup"
+import { Language, useLanguage } from "@/app/contexts/language-context"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [fontSize, setFontSize] = useState(16)
-  const [language, setLanguage] = useState("English")
+  // const [language, setLanguage] = useState("English")
   const [scrolled, setScrolled] = useState(false)
+  const [showProfilePopup, setShowProfilePopup] = useState(false)
+
+  const { language, setLanguage, t } = useLanguage()
 
   const increaseFontSize = () => {
     setFontSize((prev) => Math.min(prev + 2, 24))
@@ -44,9 +53,9 @@ const Navbar = () => {
     document.documentElement.style.fontSize = `${fontSize}px`
   }
 
-  const changeLanguage = (lang: string) => {
-    setLanguage(lang)
-    // In a real app, this would trigger language change functionality
+  const changeLanguage = (lang: Language) => {
+      setLanguage(lang)
+      // In a real app, this would trigger language change functionality
   }
 
   useEffect(() => {
@@ -63,17 +72,41 @@ const Navbar = () => {
   }, [])
 
   const navLinks = [
-    { name: "Grievances", href: "#grievances", icon: <MessageSquare size={18} /> },
-    { name: "Updates", href: "#updates", icon: <FileText size={18} /> },
-    { name: "Voting", href: "#voting", icon: <Vote size={18} /> },
-    { name: "Legal Help", href: "#chatbot", icon: <HelpCircle size={18} /> },
-    { name: "Alerts", href: "#alerts", icon: <Bell size={18} /> },
+    { name: t("grievances"), href: "#grievances", icon: <MessageSquare size={18} /> },
+    { name: t("updates"), href: "#updates", icon: <FileText size={18} /> },
+    { name: t("voting"), href: "#voting", icon: <Vote size={18} /> },
+    { name: t("Petitions"), href: "/petitions", icon: <Columns4 size={18} /> },
+    { name: t("Projects"), href: "/projects", icon: <FolderKanban size={18} /> },
+    { name: t("donate"), href: "/DonatePage", icon: <HandCoins size={18} /> },
+    { name: t("suggestions"), href: "/suggestions", icon: <Lightbulb size={18} /> },
+  ]
+
+  // Mock user data
+  // const userData = {
+  //   name: "Rahul Sharma",
+  //   email: "rahul.sharma@example.com",
+  //   phone: "9876543210",
+  //   aadhaarNumber: "1234 5678 9012",
+  //   dateJoined: "2022-05-15",
+  //   lastLogin: "2023-04-03",
+  //   verificationStatus: "verified" as const,
+  //   address: {
+  //     place: "Mayur Vihar",
+  //     district: "East Delhi",
+  //     state: "Delhi",
+  //     country: "India",
+  //     pincode: "110091",
+  //   },
+  // }
+
+  const supportedLanguages: Language[] = [
+    "English", "हिंदी", "தமிழ்", "తెలుగు", "ಕನ್ನಡ", "മലയാളം", "বাংলা"
   ]
 
   return (
     <>
       {/* Accessibility Controls */}
-      <div className="bg-blue-900 text-white py-2">
+      <div className="bg-blue-800 text-white py-2">
         <div className="container mx-auto px-4 flex justify-end items-center space-x-4">
           <div className="flex items-center space-x-2">
             <span className="text-sm">Text Size:</span>
@@ -102,13 +135,11 @@ const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => changeLanguage("English")}>English</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("हिंदी")}>हिंदी</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("தமிழ்")}>தமிழ்</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("తెలుగు")}>తెలుగు</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("ಕನ್ನಡ")}>ಕನ್ನಡ</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("മലയാളം")}>മലയാളം</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("বাংলা")}>বাংলা</DropdownMenuItem>
+            {supportedLanguages.map((lang) => (
+                <DropdownMenuItem key={lang} onClick={() => changeLanguage(lang)}>
+                  {lang}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -133,7 +164,7 @@ const Navbar = () => {
                   height={40}
                   className="mr-2"
                 />
-                <span className="text-xl font-bold text-blue-800">LokDhristi</span>
+                <span className="text-xl font-bold text-blue-600">LokDhristi</span>
               </Link>
 
               <div className="hidden md:flex md:ml-10 md:space-x-6">
@@ -143,7 +174,7 @@ const Navbar = () => {
                       <TooltipTrigger asChild>
                         <Link
                           href={link.href}
-                          className="flex items-center text-blue-800 hover:text-blue-900 transition-colors duration-200"
+                          className="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200"
                         >
                           {link.icon}
                           <span className="ml-1">{link.name}</span>
@@ -160,16 +191,21 @@ const Navbar = () => {
 
             <div className="flex items-center space-x-4">
               <div className="hidden md:block">
-                <DropdownMenu>
+              <Button onClick={() => setShowProfilePopup(true)} variant="outline" className="flex items-center text-blue-600 border-blue-600">
+                      <User size={16} className="mr-2" />
+                      My Account
+                      {/* <ChevronDown size={16} className="ml-2" /> */}
+                    </Button>
+                {/* <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center text-blue-800 border-blue-900">
+                    <Button variant="outline" className="flex items-center text-blue-600 border-blue-600">
                       <User size={16} className="mr-2" />
                       My Account
                       <ChevronDown size={16} className="ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowProfilePopup(true)}>
                       <User size={16} className="mr-2" />
                       <span>My Profile</span>
                     </DropdownMenuItem>
@@ -187,11 +223,11 @@ const Navbar = () => {
                       <span>Logout</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
               </div>
 
               <div className="md:hidden">
-                <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-blue-800">
+                <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-blue-600">
                   {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </Button>
               </div>
@@ -212,7 +248,7 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
+                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.icon}
@@ -222,23 +258,26 @@ const Navbar = () => {
 
                 <div className="border-t border-gray-200 pt-4 mt-4">
                   <p className="px-3 text-sm font-medium text-gray-500 mb-2">Account</p>
-                  <Link
-                    href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
+                  <button
+                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50 w-full text-left"
+                    onClick={() => {
+                      setShowProfilePopup(true)
+                      setIsMenuOpen(false)
+                    }}
                   >
                     <User size={18} className="mr-2" />
                     My Profile
-                  </Link>
+                  </button>
                   <Link
                     href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
+                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
                   >
                     <MapPin size={18} className="mr-2" />
                     My Constituency
                   </Link>
                   <Link
                     href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
+                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
                   >
                     <LogOut size={18} className="mr-2" />
                     Logout
@@ -249,6 +288,9 @@ const Navbar = () => {
           )}
         </div>
       </motion.nav>
+
+      {/* User Profile Popup */}
+      <UserProfilePopup isOpen={showProfilePopup} onClose={() => setShowProfilePopup(false)} />
     </>
   )
 }

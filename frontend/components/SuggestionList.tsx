@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 
 export default function SuggestionList() {
   const [suggestions, setSuggestions] = useState([]);
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
+
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/suggestions")
+    fetch(`${BASE_URL}/api/suggestions`)
       .then((res) => res.json())
       .then((data) => setSuggestions(data));
   }, []);

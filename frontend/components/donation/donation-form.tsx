@@ -2,9 +2,9 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { motion } from "framer-motion"
-import { CreditCard, CheckCircle2, Info } from "lucide-react"
+import { CreditCard, CheckCircle2, Info, User } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
+import jsPDF from "jspdf";
 
 interface UserData {
   name: string
@@ -61,6 +62,9 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
   const [showReceipt, setShowReceipt] = useState(false)
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [payementStatus, setPaymentStatus] = useState(false);
+  const [donations, setDonations] = useState([]);
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
+
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -78,7 +82,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/order", {
+      const response = await fetch(`${BASE_URL}/order`, {
         method: "POST",
         body: JSON.stringify({
           amount: String(amount * 100),
@@ -102,7 +106,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
         handler: async function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) {
           const body = { ...response };
 
-          const validateResponse = await fetch("http://localhost:5001/order/validate", {
+          const validateResponse = await fetch(`${BASE_URL}/order/validate`, {
             method: "POST",
             body: JSON.stringify(body),
             headers: {
@@ -110,23 +114,38 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
             }
           });
           const jsonResponse = await validateResponse.json();
-          console.log(jsonResponse);
           if(jsonResponse.msg === "success") {
             try {
+              const donationPayload = {
+                name: userData.name,
+                aadhaarNumber: userData.aadhaarNumber,
+                phone: userData.phone,
+                email: userData.email,
+                address: userData.address,
+                category,
+                amount,
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+              };
+          
+              await axios.post(`${BASE_URL}/donate`, donationPayload);
               setPaymentStatus(true);
               console.log(response);
+              setShowSuccess(true);
+              resetForm();
             } catch (error) {
               console.error(error);
+              resetForm();
             }
           }
         },
         prefill: {
-          name: "Sudharshan",
-          email: "example@gmail.com",
-          contact: "9392267649"
+          name: userData.name,
+          email: userData.email,
+          contact: userData.phone,
         },
         notes: {
-          address: "Razorpay Corporate Office"
+          address: "LokDhristi Official"
         },
         theme: {
           color: "#3399cc"
@@ -144,18 +163,56 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 
   };
 
+  const handleSendOtp = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: userData.phone }), // phone comes from userData
+      });
 
-  const handleSendOtp = () => {
-    // In a real app, this would send an OTP to the phone number
-    setOtpSent(true)
-  }
-
-  const handleVerifyOtp = () => {
-    // In a real app, this would verify the OTP
-    if (otp === "123456") {
-      setOtpVerified(true)
+  
+      const data = await res.json();
+      console.log(data);
+      if (res.ok) {
+        setOtpSent(true);
+        alert("OTP sent successfully!");
+      } else {
+        alert(data.message || "Failed to send OTP");
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Server error. Please try again.");
     }
-  }
+  };
+  
+  
+
+  const handleVerifyOtp = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: userData.phone,
+          otp: otp,
+        }),
+      });
+  
+      const data = await res.json();
+      if (res.ok && data.message === "OTP verified") {
+        setOtpVerified(true);
+        alert("OTP verified successfully!");
+      } else {
+        alert("Invalid OTP. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      alert("Verification failed. Please try again.");
+    }
+  };
+  
+  
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseInt(e.target.value)
@@ -165,7 +222,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
   }
 
   const handleDonate = () => {
-    if (!agreedToTerms || !otpVerified || !category || amount < 1000) {
+    if (!agreedToTerms || !otpVerified || !category || amount < 1000 || amount > 100000) {
       return
     }
     setShowConfirmation(true)
@@ -175,21 +232,43 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
     // In a real app, this would process the payment
     setShowConfirmation(false)
     initiatePayment()
-    if(payementStatus) {
-      setShowSuccess(true);
-    }
+    resetForm()
+    // if(payementStatus) {
+    //   setShowSuccess(true);
+    // }
   }
 
+
+  const resetForm = () => {
+    setAmount(1000);
+    setPhone(userData.phone);
+    setOtp("");
+    setOtpSent(false);
+    setOtpVerified(false);
+    setAgreedToTerms(false);
+    setShowConfirmation(false);
+  };
+  
+  
+  
+
   const handleDownloadReceipt = () => {
-    // In a real app, this would download a receipt
-    setShowReceipt(false)
-    // Mock download functionality
-    const link = document.createElement("a")
-    link.href = "#"
-    link.download = "donation_receipt.pdf"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Donation Receipt", 20, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Name: ${userData.name}`, 20, 40);
+    doc.text(`Aadhaar Number: ${userData.aadhaarNumber}`, 20, 50);
+    doc.text(`Phone: ${userData.phone}`, 20, 60);
+    doc.text(`Email: ${userData.email}`, 20, 70);
+    doc.text(`Category: ${category}`, 20, 80);
+    doc.text(`Amount Donated: ₹${amount}`, 20, 90);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 100);
+    doc.text(`Payment Status: Successful`, 20, 110);
+
+    doc.save(`donation_receipt_${userData.name}.pdf`);
   }
 
   const donationCategories = [
@@ -202,6 +281,32 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
     { value: "digital-india", label: "Digital India" },
     { value: "skill-india", label: "Skill India" },
   ]
+  const aadhar = userData.aadhaarNumber;
+  interface Donation {
+    id: string;
+    amount: number;
+    category: string;
+    date: string;
+    paymentId: string;
+    orderId: string;
+    createdAt: string;
+  }
+
+  const getDonationsByAadhaar = async (aadhar: string): Promise<Donation[]> => {
+    try {
+      const res = await fetch(`${BASE_URL}/donations/${aadhar}`);
+      const data = await res.json();
+      setDonations(data);
+      console.log('Donations:', data);
+      return data;
+    } catch (err) {
+      console.error('Error fetching:', err);
+      throw err;
+    }
+  };
+  useEffect(() => {
+    getDonationsByAadhaar(aadhar);
+  }, [aadhar]);
 
   return (
     <>
@@ -237,7 +342,7 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                     </Tooltip>
                   </TooltipProvider>
                 </Label>
-                <Input id="aadhaar" value={userData.aadhaarNumber} disabled className="bg-gray-50" />
+                <Input id="aadhaar" value={`${userData.aadhaarNumber.slice(0, 4)} ${userData.aadhaarNumber.slice(4, 8)} ${userData.aadhaarNumber.slice(8, 12)} ${userData.aadhaarNumber.slice(12, )}`} disabled className="bg-gray-50" />
                 <p className="text-xs text-gray-500">Auto-filled from your profile</p>
               </div>
 
@@ -245,10 +350,11 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="flex space-x-2">
                   <Input
+                  disabled
                     id="phone"
-                    value={phone}
+                    value={userData.phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    disabled={otpVerified}
+                    // disabled={otpVerified}
                     className={otpVerified ? "bg-gray-50" : ""}
                   />
                   {!otpSent && !otpVerified && (
@@ -268,14 +374,14 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                       id="otp"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
-                      placeholder="123456"
+                      placeholder="OTP"
                       maxLength={6}
                     />
                     <Button type="button" onClick={handleVerifyOtp} className="whitespace-nowrap">
                       Verify
                     </Button>
                   </div>
-                  <p className="text-xs text-blue-600">OTP sent to {phone}. For demo, use 123456</p>
+                  <p className="text-xs text-blue-600">OTP sent to {phone}, Verify Now...</p>
                 </div>
               )}
 
@@ -335,22 +441,25 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
                   <span>Donation Amount (₹)</span>
                   <span className="text-xs text-gray-500">Min: ₹1,000 | Max: ₹100,000</span>
                 </Label>
-                <Input id="amount" type="number" min={1000} max={100000} value={amount} onChange={handleAmountChange} />
+                {/* <Input id="amount" type="number" value={amount} onChange={handleAmountChange} /> */}
 
-                <div className="flex justify-between mt-2">
-                  {[1000, 5000, 10000, 25000].map((amt) => (
+                <div className="flex justify-between mt-2 mb-4 flex-wrap">
+                  {[1000, 5000, 10000, 25000, 50000, 75000, 100000].map((amt) => (
                     <Button
                       key={amt}
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => setAmount(amt)}
-                      className={amount === amt ? "bg-blue-100 border-blue-300" : ""}
+                      className={amount === amt ? "bg-blue-100 border-blue-300 m-3" : "m-3"}
                     >
-                      ₹{amt.toLocaleString()}
+                      ₹{amt.toLocaleString("en-IN")}
                     </Button>
                   ))}
                 </div>
+                {amount && (
+                  <strong className="text-lg text-blue-600 mt-2">You've Chosen to Donate: ₹{amount.toLocaleString("en-IN")}</strong>
+                )}
               </div>
 
               {/* Terms and Conditions */}
@@ -562,4 +671,3 @@ const DonationForm = ({ userData, openTerms }: DonationFormProps) => {
 }
 
 export default DonationForm
-

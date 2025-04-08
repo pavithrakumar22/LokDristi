@@ -26,8 +26,15 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AnimatedCard } from "@/components/ui/animated-card"
 import { Timeline } from "@/components/ui/timeline"
+import { useRouter } from "next/navigation"
 
 const FeatureSection = () => {
+
+const router = useRouter()
+  const handleSignin = () => {
+    router.push("/auth/Signup")
+  }
+
   const features = [
     {
       id: "grievances",
@@ -90,6 +97,26 @@ const FeatureSection = () => {
       },
     },
     {
+      id: "petitions",
+      title: "Public Petitions Platform",
+      description:
+        "Create and sign petitions for causes that matter to your community, driving change through collective action with a transparent process for government response to petitions that reach signature thresholds.",
+      icon: <GlobeIcon className="h-10 w-10 text-blue-600" />,
+      image: "/placeholder.svg?height=300&width=400",
+      details: [
+        "Easy petition creation with multimedia support",
+        "Secure signature verification system",
+        "Automatic routing to relevant government authorities",
+        "Mandatory response mechanism for qualifying petitions",
+        "Success stories and impact tracking for approved petitions",
+      ],
+      stats: {
+        petitions: "8,000+",
+        signatures: "25M+",
+        success: "35%",
+      },
+    },
+    {
       id: "chatbot",
       title: "AI Legal Rights Assistant",
       description:
@@ -107,46 +134,6 @@ const FeatureSection = () => {
         queries: "1M+",
         accuracy: "98%",
         languages: "12",
-      },
-    },
-    {
-      id: "suggestions",
-      title: "Community Suggestion Box",
-      description:
-        "Submit your ideas and suggestions to improve government services and community initiatives. The best ideas are implemented with full transparency and recognition for contributors.",
-      icon: <PencilIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Open platform for submitting improvement ideas",
-        "Community voting to highlight the most impactful suggestions",
-        "Implementation tracking for adopted suggestions",
-        "Recognition program for citizens whose ideas are implemented",
-        "Collaboration tools for refining and developing promising ideas",
-      ],
-      stats: {
-        ideas: "12,000+",
-        implemented: "450+",
-        savings: "₹120Cr+",
-      },
-    },
-    {
-      id: "funds",
-      title: "Public Funds & Donations Tracker",
-      description:
-        "Track public funds and make donations to support community projects and initiatives with complete transparency on how every rupee is utilized.",
-      icon: <DollarSignIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Transparent tracking of government fund allocation and utilization",
-        "Secure donation platform for community projects",
-        "Detailed breakdown of project budgets and expenditures",
-        "Tax benefit certificates for donations",
-        "Impact assessment reports for completed projects",
-      ],
-      stats: {
-        donations: "₹25Cr+",
-        projects: "320+",
-        transparency: "100%",
       },
     },
     {
@@ -170,6 +157,26 @@ const FeatureSection = () => {
       },
     },
     {
+      id: "suggestions",
+      title: "Community Suggestion Box",
+      description:
+        "Submit your ideas and suggestions to improve government services and community initiatives. The best ideas are implemented with full transparency and recognition for contributors.",
+      icon: <PencilIcon className="h-10 w-10 text-blue-600" />,
+      image: "/placeholder.svg?height=300&width=400",
+      details: [
+        "Open platform for submitting improvement ideas",
+        "Community voting to highlight the most impactful suggestions",
+        "Implementation tracking for adopted suggestions",
+        "Recognition program for citizens whose ideas are implemented",
+        "Collaboration tools for refining and developing promising ideas",
+      ],
+      stats: {
+        ideas: "12,000+",
+        implemented: "450+",
+        savings: "₹120Cr+",
+      },
+    },
+    {
       id: "tracking",
       title: "Real-time Project Tracking System",
       description:
@@ -190,23 +197,23 @@ const FeatureSection = () => {
       },
     },
     {
-      id: "petitions",
-      title: "Public Petitions Platform",
+      id: "funds",
+      title: "Public Funds & Donations Tracker",
       description:
-        "Create and sign petitions for causes that matter to your community, driving change through collective action with a transparent process for government response to petitions that reach signature thresholds.",
-      icon: <GlobeIcon className="h-10 w-10 text-blue-600" />,
+        "Track public funds and make donations to support community projects and initiatives with complete transparency on how every rupee is utilized.",
+      icon: <DollarSignIcon className="h-10 w-10 text-blue-600" />,
       image: "/placeholder.svg?height=300&width=400",
       details: [
-        "Easy petition creation with multimedia support",
-        "Secure signature verification system",
-        "Automatic routing to relevant government authorities",
-        "Mandatory response mechanism for qualifying petitions",
-        "Success stories and impact tracking for approved petitions",
+        "Transparent tracking of government fund allocation and utilization",
+        "Secure donation platform for community projects",
+        "Detailed breakdown of project budgets and expenditures",
+        "Tax benefit certificates for donations",
+        "Impact assessment reports for completed projects",
       ],
       stats: {
-        petitions: "8,000+",
-        signatures: "25M+",
-        success: "35%",
+        donations: "₹25Cr+",
+        projects: "320+",
+        transparency: "100%",
       },
     },
   ]
@@ -281,7 +288,7 @@ const FeatureSection = () => {
                       </div>
 
                       <div className="pt-4 flex justify-center">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">Learn More</Button>
+                        <Button onClick={handleSignin} className="bg-blue-600 hover:bg-blue-700 text-white">Learn More</Button>
                       </div>
                     </div>
                   </AnimatedCard>
