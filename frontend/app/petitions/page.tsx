@@ -2,14 +2,13 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import PetitionForm from "@/components/petition-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Navbar from "@/components/navbar"
+import Footer from "@/components/footer"
 
 export default function PetitionsPage() {
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      {/* <header className="bg-blue-700 text-white py-4">
-      </header> */}
-
+      <Navbar />
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-12 text-center">
         <div className="container mx-auto px-4">
@@ -104,6 +103,7 @@ export default function PetitionsPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
