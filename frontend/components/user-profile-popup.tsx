@@ -13,7 +13,7 @@ interface UserData {
   name: string
   email: string
   phone: string
-  aadhaarNumber: string
+  aadhaarNo: string
   dateJoined: string
   lastLogin: string
   verificationStatus: "verified" | "pending" | "unverified"
@@ -74,7 +74,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
 
   if (!isOpen) return null
 
-  const aadhaarNumber = userData.aadhaarNumber;
+  const aadhaarNumber = sessionStorage.getItem('user');;
   const fetchUser = async () => {
     try {
       const res = await fetch(`${BASE_URL}/user/${aadhaarNumber}`);
@@ -93,6 +93,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
       }
     }
   };
+  fetchUser();
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -123,7 +124,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
               transition={{ delay: 0.2 }}
             >
               <Avatar className="h-20 w-20 border-4 border-white">
-                <AvatarImage src="/placeholder.svg?height=80&width=80" alt={user?.name} />
+                <AvatarImage src="/frontend/public/user.svg?height=80&width=80" alt={user?.name} />
                 <AvatarFallback className="text-2xl bg-blue-700">{getInitials(user?.name || "")}</AvatarFallback>
               </Avatar>
             </motion.div>
@@ -238,7 +239,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Aadhaar Number</p>
-                    <p className="font-medium">{user?.aadhaarNumber}</p>
+                    <p className="font-medium">{`${user?.aadhaarNo.slice(0, 4)} ${user?.aadhaarNo.slice(4, 8)} ${user?.aadhaarNo.slice(8, 12)} ${user?.aadhaarNo.slice(12, )}`}</p>
                   </motion.div>
                 </div>
               </div>
@@ -260,7 +261,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Place/Locality</p>
-                    <p className="font-medium">{user?.address.place}</p>
+                    <p className="font-medium">{userData.address.place}</p>
                   </motion.div>
 
                   <motion.div
@@ -270,7 +271,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">District</p>
-                    <p className="font-medium">{user?.address.district}</p>
+                    <p className="font-medium">{userData.address.district}</p>
                   </motion.div>
 
                   <motion.div
@@ -280,7 +281,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">State</p>
-                    <p className="font-medium">{user?.address.state}</p>
+                    <p className="font-medium">{userData.address.state}</p>
                   </motion.div>
 
                   <motion.div
@@ -290,7 +291,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Pincode</p>
-                    <p className="font-medium">{user?.address.pincode}</p>
+                    <p className="font-medium">{userData.address.pincode}</p>
                   </motion.div>
 
                   <motion.div
@@ -300,7 +301,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1 md:col-span-2"
                   >
                     <p className="text-sm text-gray-500">Country</p>
-                    <p className="font-medium">{user?.address.country}</p>
+                    <p className="font-medium">{userData.address.country}</p>
                   </motion.div>
                 </div>
               </div>
@@ -322,7 +323,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
                     className="space-y-1"
                   >
                     <p className="text-sm text-gray-500">Date Joined</p>
-                    <p className="font-medium">{formatDate(user?.dateJoined || "")}</p>
+                    <p className="font-medium">{formatDate(userData.dateJoined || "")}</p>
                   </motion.div>
 
                   <motion.div
@@ -368,7 +369,7 @@ const UserProfilePopup = ({ isOpen, onClose, userData }: UserProfilePopupProps) 
 
               <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
                 <p className="text-sm text-yellow-700">
-                  Account settings functionality will be implemented in the backend. This is a placeholder UI.
+                  Account settings functionality will be implemented in future.
                 </p>
               </div>
             </div>
