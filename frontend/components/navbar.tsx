@@ -272,13 +272,6 @@ const Navbar = () => {
                     href="#"
                     className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
                   >
-                    <MapPin size={18} className="mr-2" />
-                    My Constituency
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
-                  >
                     <LogOut size={18} className="mr-2" />
                     Logout
                   </Link>
