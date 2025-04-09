@@ -21,6 +21,12 @@ import petitionRoutes from "./routes/petitionRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import swaggerSpec from './swagger.js';
 import swaggerUi from 'swagger-ui-express';
+import { ethers } from "ethers";
+import fs from "fs";
+import path from "path";
+import votingRoutes from "./routes/votingRoutes.js";
+
+
 
 dotenv.config();
 const app = express();
@@ -31,6 +37,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 connectDB();
+
+// Load ABI and Contract Address
+const __dirname = path.resolve();
+const contractJson = JSON.parse(fs.readFileSync(path.join(__dirname, "../frontend/contracts/Voting.json")));
+const contractAddressJson = JSON.parse(fs.readFileSync(path.join(__dirname, "../frontend/contracts/Voting-address.json")));
+const contractAddress = contractAddressJson.address;
+
+// Ethers setup
+const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_URL);
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+const votingContract = new ethers.Contract(contractAddress, contractJson.abi, wallet);
+
+app.use("/api", votingRoutes(votingContract));
 
 // Swagger Docs Route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
