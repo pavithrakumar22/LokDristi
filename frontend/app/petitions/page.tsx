@@ -128,6 +128,7 @@ interface PetitionCardProps {
 }
 
 function PetitionCard({petitionId, title, description, tags, signatures, status, createdAt }: PetitionCardProps) {
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
   const statusColors = {
     open: "bg-green-100 text-green-800",
     closed: "bg-red-100 text-red-800",
@@ -145,7 +146,7 @@ const handleSign = async () => {
   try {
     const token = localStorage.getItem("token")
 
-    const res = await axios.post(`http://localhost:5001/api/petitions/support/${petitionId}`, {},  {
+    const res = await axios.post(`${BASE_URL}/api/petitions/support/${petitionId}`, {},  {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
