@@ -22,6 +22,14 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/comments/:path*',
+        destination: 'http://localhost:5000/api/comments/:path*',
+      },
+    ];
+  },
   experimental: {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
