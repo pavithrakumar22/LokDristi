@@ -25,6 +25,7 @@ import { ethers } from "ethers";
 import fs from "fs";
 import path from "path";
 import votingRoutes from "./routes/votingRoutes.js";
+import commentRoutes from './routes/commentRoutes.js';
 
 
 
@@ -78,7 +79,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/discussions", discussionRoutes);
 app.use("/api/petitions", petitionRoutes);
 app.use("/api/projects", projectRoutes);
-
+app.use("/api/comments",commentRoutes);
 /**
  * @swagger
  * /order:
