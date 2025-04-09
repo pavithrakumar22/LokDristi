@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { X, Upload, Share2 } from "lucide-react"
+import axios from "axios"
 
 const AVAILABLE_TAGS = [
   "Infrastructure",
@@ -49,6 +50,7 @@ export default function PetitionForm() {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [documents, setDocuments] = useState<File[]>([])
   const [showSuccess, setShowSuccess] = useState(false)
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const handleAddTag = (tag: string) => {
     if (!selectedTags.includes(tag) && selectedTags.length < 5) {
@@ -71,12 +73,37 @@ export default function PetitionForm() {
     setDocuments(documents.filter((file) => file !== fileToRemove))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would normally submit the form data to your backend
-    console.log({ title, description, selectedTags, documents })
-    setShowSuccess(true)
-  }
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault()
+    
+      const formData = new FormData()
+      formData.append("title", title)
+      formData.append("description", description)
+      selectedTags.forEach((tag) => formData.append("tags[]", tag))
+      documents.forEach((file) => formData.append("files", file))
+    
+      try {
+        const token = localStorage.getItem("token") // or however you store the JWT
+    
+        const response = await axios.post(`${BASE_URL}/api/petitions/submit`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, // required for protect middleware
+          },
+        })
+    
+        console.log("Petition submitted successfully:", response.data)
+        setShowSuccess(true)
+        // optionally reset form
+        setTitle("")
+        setDescription("")
+        setSelectedTags([])
+        setDocuments([])
+      } catch (error: any) {
+        console.error("Error submitting petition:", error.response?.data || error.message)
+        alert("Failed to submit petition. Please try again.")
+      }
+    }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

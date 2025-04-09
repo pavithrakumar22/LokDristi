@@ -17,6 +17,8 @@ import chatRoutes from "./routes/chatRoutes.js";
 import User from "./models/user.js";
 import discussionRoutes from "./routes/discussionRoutes.js";
 import Discussion from './models/Discussion.js';
+import petitionRoutes from "./routes/petitionRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -43,6 +45,8 @@ app.use('/api/grievances', grievanceRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/discussions", discussionRoutes);
+app.use("/api/petitions", petitionRoutes);
+app.use("/api/projects", projectRoutes);
 
 // --- Create Razorpay Order ---
 app.post('/order', async (req, res) => {

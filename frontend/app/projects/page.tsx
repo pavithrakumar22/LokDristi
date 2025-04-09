@@ -1,3 +1,6 @@
+"use client"
+
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -7,6 +10,48 @@ import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 
 export default function ProjectsPage() {
+  interface Project {
+    projectId: string;
+    title: string;
+    description: string;
+    department: string;
+    contractors: string;
+    stages: string[];
+    currentStage: number;
+    totalFunds: string;
+    status: "active" | "completed" | "delayed" | "cancelled";
+    startDate: string;
+    completionDate: string;
+  }
+
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/projects');
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects');
+        }
+        const data = await response.json();
+        console.log(data);
+        setProjects(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) return <div className="p-4">Loading projects...</div>;
+  if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
+
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
@@ -55,139 +100,86 @@ export default function ProjectsPage() {
           </TabsList>
 
           <TabsContent value="all" className="space-y-6">
+          {projects?.map((project) => (
             <ProjectCard
-              id="1"
-              title="Metro Line Extension Phase II"
-              description="Extension of the metro line from City Center to Airport with 8 new stations"
-              department="Urban Transport Authority"
-              contractors="Metro Infrastructure Ltd, Urban Development Corp"
-              stages={["Planning", "Land Acquisition", "Foundation Work", "Construction", "Testing", "Operational"]}
-              currentStage={2}
-              totalFunds="₹1,250 Cr"
-              status="active"
-              startDate="2024-10-15"
-              completionDate="2027-06-30"
+              key={project.projectId}
+              id={project.projectId}
+              title={project.title}
+              description={project.description}
+              department={project.department}
+              contractors={project.contractors}
+              stages={project.stages}
+              currentStage={project.currentStage}
+              totalFunds={`${project.totalFunds}`}
+              status={project.status}
+              startDate={project.startDate}
+              completionDate={project.completionDate}
             />
+          ))}
+        </TabsContent>
 
-            <ProjectCard
-              id="2"
-              title="Smart City Water Management System"
-              description="Implementation of IoT-based water distribution and monitoring system"
-              department="Water Resources Department"
-              contractors="Smart Utilities Inc, Water Tech Solutions"
-              stages={["Planning", "Procurement", "Installation", "Testing", "Deployment"]}
-              currentStage={3}
-              totalFunds="₹85 Cr"
-              status="active"
-              startDate="2024-08-01"
-              completionDate="2025-07-31"
-            />
-
-            <ProjectCard
-              id="3"
-              title="Central Park Renovation"
-              description="Complete renovation of Central Park including new amenities and landscaping"
-              department="Parks & Recreation Department"
-              contractors="Green Spaces Ltd, Urban Landscaping Co"
-              stages={["Planning", "Design", "Demolition", "Construction", "Landscaping", "Completion"]}
-              currentStage={5}
-              totalFunds="₹32 Cr"
-              status="completed"
-              startDate="2023-11-10"
-              completionDate="2024-12-15"
-            />
-
-            <ProjectCard
-              id="4"
-              title="Rural Healthcare Centers"
-              description="Construction of 15 primary healthcare centers in rural districts"
-              department="Health Department"
-              contractors="Healthcare Infrastructure Solutions, Rural Development Corp"
-              stages={[
-                "Planning",
-                "Land Acquisition",
-                "Foundation",
-                "Construction",
-                "Equipment Installation",
-                "Staffing",
-                "Operational",
-              ]}
-              currentStage={3}
-              totalFunds="₹120 Cr"
-              status="delayed"
-              startDate="2024-02-20"
-              completionDate="2026-03-31"
-            />
-          </TabsContent>
 
           <TabsContent value="active" className="space-y-6">
-            <ProjectCard
-              id="1"
-              title="Metro Line Extension Phase II"
-              description="Extension of the metro line from City Center to Airport with 8 new stations"
-              department="Urban Transport Authority"
-              contractors="Metro Infrastructure Ltd, Urban Development Corp"
-              stages={["Planning", "Land Acquisition", "Foundation Work", "Construction", "Testing", "Operational"]}
-              currentStage={2}
-              totalFunds="₹1,250 Cr"
-              status="active"
-              startDate="2024-10-15"
-              completionDate="2027-06-30"
-            />
-
-            <ProjectCard
-              id="2"
-              title="Smart City Water Management System"
-              description="Implementation of IoT-based water distribution and monitoring system"
-              department="Water Resources Department"
-              contractors="Smart Utilities Inc, Water Tech Solutions"
-              stages={["Planning", "Procurement", "Installation", "Testing", "Deployment"]}
-              currentStage={3}
-              totalFunds="₹85 Cr"
-              status="active"
-              startDate="2024-08-01"
-              completionDate="2025-07-31"
-            />
+          {projects
+            ?.filter((project) => project.status?.toLowerCase() === "active")
+            .map((project, index) => (
+              <ProjectCard
+                key={index} // temporary fallback
+                id={project.projectId}
+                title={project.title}
+                description={project.description}
+                department={project.department}
+                contractors={project.contractors}
+                stages={project.stages}
+                currentStage={project.currentStage}
+                totalFunds={`${project.totalFunds}`}
+                status={project.status}
+                startDate={project.startDate}
+                completionDate={project.completionDate}
+              />
+          ))}
           </TabsContent>
 
           <TabsContent value="completed" className="space-y-6">
-            <ProjectCard
-              id="3"
-              title="Central Park Renovation"
-              description="Complete renovation of Central Park including new amenities and landscaping"
-              department="Parks & Recreation Department"
-              contractors="Green Spaces Ltd, Urban Landscaping Co"
-              stages={["Planning", "Design", "Demolition", "Construction", "Landscaping", "Completion"]}
-              currentStage={5}
-              totalFunds="₹32 Cr"
-              status="completed"
-              startDate="2023-11-10"
-              completionDate="2024-12-15"
-            />
+          {projects
+            ?.filter((project) => project.status?.toLowerCase() === "completed")
+            .map((project, index) => (
+              <ProjectCard
+                key={index} // temporary fallback
+                id={project.projectId}
+                title={project.title}
+                description={project.description}
+                department={project.department}
+                contractors={project.contractors}
+                stages={project.stages}
+                currentStage={project.currentStage}
+                totalFunds={`${project.totalFunds}`}
+                status={project.status}
+                startDate={project.startDate}
+                completionDate={project.completionDate}
+              />
+          ))}
           </TabsContent>
 
           <TabsContent value="delayed" className="space-y-6">
-            <ProjectCard
-              id="4"
-              title="Rural Healthcare Centers"
-              description="Construction of 15 primary healthcare centers in rural districts"
-              department="Health Department"
-              contractors="Healthcare Infrastructure Solutions, Rural Development Corp"
-              stages={[
-                "Planning",
-                "Land Acquisition",
-                "Foundation",
-                "Construction",
-                "Equipment Installation",
-                "Staffing",
-                "Operational",
-              ]}
-              currentStage={3}
-              totalFunds="₹120 Cr"
-              status="delayed"
-              startDate="2024-02-20"
-              completionDate="2026-03-31"
-            />
+          {projects
+            ?.filter((project) => project.status?.toLowerCase() === "delayed")
+            .map((project, index) => (
+              <ProjectCard
+                key={index} // temporary fallback
+                id={project.projectId}
+                title={project.title}
+                description={project.description}
+                department={project.department}
+                contractors={project.contractors}
+                stages={project.stages}
+                currentStage={project.currentStage}
+                totalFunds={`${project.totalFunds}`}
+                status={project.status}
+                startDate={project.startDate}
+                completionDate={project.completionDate}
+              />
+          ))}
           </TabsContent>
         </Tabs>
       </div>
