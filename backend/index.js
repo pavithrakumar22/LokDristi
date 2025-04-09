@@ -19,6 +19,7 @@ import discussionRoutes from "./routes/discussionRoutes.js";
 import Discussion from './models/Discussion.js';
 import petitionRoutes from "./routes/petitionRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import faceRoutes from "./routes/faceRoutes.js";
 import swaggerSpec from './swagger.js';
 import swaggerUi from 'swagger-ui-express';
 import { ethers } from "ethers";
@@ -34,8 +35,11 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 // --- middleware setup ---
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 connectDB();
 
@@ -77,6 +81,10 @@ app.use('/api/grievances', grievanceRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/discussions", discussionRoutes);
+app.use("/api/petitions", petitionRoutes);
+app.use("/api/projects", projectRoutes);
+app.use('/api/face', faceRoutes);
+
 app.use('/api/comments', commentRoutes);
 app.use('/api/petitions', petitionRoutes);
 app.use('/api/projects', projectRoutes);
