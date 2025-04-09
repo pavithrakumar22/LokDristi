@@ -5,15 +5,17 @@ import Comment from '../models/Comment.js';
 const router = express.Router();
 
 // Get comments for a post
-router.get('/:discussionId', async (req, res) => {
-  const { discussionId } = req.params;
-  try {
-    const comments = await Comment.find({ discussionId }).sort({ createdAt: -1 });
-    res.json(comments);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching comments' });
-  }
-});
+router.get("/:discussionId", async (req, res) => {
+    try {
+      const { discussionId } = req.params;
+      const comments = await Comment.find({ discussionId });
+      res.status(200).json(comments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      res.status(500).json({ error: "Server Error" });
+    }
+  });
+  
 
 // Add a comment
 router.post('/:discussionId', async (req, res) => {

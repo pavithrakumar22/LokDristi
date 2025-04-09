@@ -1,23 +1,29 @@
 // models/Comment.js
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const commentSchema = new mongoose.Schema({
   discussionId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Discussion",
+    ref: 'Discussion',
     required: true
   },
   user: {
-    type: String, // or { type: mongoose.Schema.Types.ObjectId, ref: 'User' } if login system
+    type: String,
     required: true
   },
   text: {
     type: String,
     required: true
   },
-  upvotes: { type: Number, default: 0 },
-  downvotes: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now }
-});
+  upvotes: {
+    type: Number,
+    default: 0
+  },
+  downvotes: {
+    type: Number,
+    default: 0
+  }
+}, { timestamps: true });
 
-export default mongoose.model("Comment", commentSchema);
+const Comment = mongoose.model('Comment', commentSchema);
+export default Comment;
