@@ -298,6 +298,18 @@ app.get("/api/seed-discussion", async (req, res) => {
   }
 });
 
+app.get("/api/news", async (req, res) => {
+  try {
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbz-4171X5dQNgvl5y0jsnruZVwGQtbwvZh_MrsSS4RkmR5bPfpetFF5TdWOuyc_z1mzFA/exec";
+
+    const response = await fetch(scriptUrl);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 // --- start server ---
 app.listen(PORT, () => {
   console.log("✅ LokDristi backend running on port", PORT);

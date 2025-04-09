@@ -16,6 +16,10 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    domains: [
+      "akm-img-a-in.tosshub.com",
+      "cdn.dnaindia.com",
+    ],
     unoptimized: true,
   },
   experimental: {
