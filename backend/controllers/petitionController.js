@@ -41,8 +41,8 @@ const getAllPetitions = async (req, res) => {
 // Support a petition
 const supportPetition = async (req, res) => {
   try {
-    const { id } = req.params;
-    const petition = await Petition.findById(id);
+    const { id } = req.params; // This is petitionId, not _id
+    const petition = await Petition.findOne({ petitionId: id });
 
     if (!petition) return res.status(404).json({ message: 'Petition not found' });
 
@@ -54,11 +54,14 @@ const supportPetition = async (req, res) => {
     petition.noOfSigns += 1;
 
     await petition.save();
+
     res.json({ message: 'Supported petition successfully' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Error supporting petition', error });
   }
 };
+
 
 export {
   submitPetition,
