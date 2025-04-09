@@ -13,11 +13,11 @@ import { Search, Filter, RefreshCw } from "lucide-react"
 
 export default function NewsPage() {
   interface News {
-    title: string
-    description: string
-    url: string
-    publishedAt: string
-    imageUrl: string
+    Title: string
+    Description: string
+    URL: string
+    PublishedAt: string
+    ImageURL: string
     category: string
   }
 
@@ -28,23 +28,25 @@ export default function NewsPage() {
   const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
   const filteredNews = news.filter((item) => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const title = item?.Title || "";
+    const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === "all" || item.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
+  
 
   // Define categories for filtering
   const categories = ["Politics", "Economy", "Technology", "Health", "Education"];
 
   // 👇 Replace with your actual Apps Script URL
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbz-4171X5dQNgvl5y0jsnruZVwGQtbwvZh_MrsSS4RkmR5bPfpetFF5TdWOuyc_z1mzFA/exec"
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbw8VUZqmcofKAfoM-IPqKxOcAWtNvShQyf3ijqW2otBvBU69E2krO12FCtxDuUs7fY_-g/exec"
 
   // Fetch live data on component mount
   useEffect(() => {
     fetch(`${BASE_URL}/api/news`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched news data:", data);
+        console.log(data.news);
         setNews(data.news || []);
         setLoading(false);
       })
@@ -99,12 +101,12 @@ export default function NewsPage() {
             filteredNews.map((news, index) => (
               <NewsCard
                 key={index}
-                title={news.title}
-                description={news.description}
-                url={news.url}
-                publishedAt={news.publishedAt}
-                imageUrl={news.imageUrl}
-                category={news.category}
+                title={news.Title}
+                description={news.Description}
+                url={news.URL}
+                publishedAt={news.PublishedAt}
+                imageUrl={news.ImageURL}
+                category="News"
                 index={index}
               />
             ))
