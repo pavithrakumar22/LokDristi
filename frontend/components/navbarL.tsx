@@ -243,26 +243,13 @@ const Navbar = () => {
                 <div className="border-t border-gray-200 pt-4 mt-4">
                   <p className="px-3 text-sm font-medium text-gray-500 mb-2">Account</p>
                   <Link
-                    href="#"
+                    href="/auth/login"
                     className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
                   >
                     <User size={18} className="mr-2" />
-                    My Profile
+                    Login/SignUp
                   </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
-                  >
-                    <MapPin size={18} className="mr-2" />
-                    My Constituency
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center rounded-md px-3 py-2 text-base font-medium text-blue-800 hover:bg-blue-50"
-                  >
-                    <LogOut size={18} className="mr-2" />
-                    Logout
-                  </Link>
+                  
                 </div>
               </div>
             </motion.div>

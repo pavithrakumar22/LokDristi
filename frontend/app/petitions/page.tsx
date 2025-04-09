@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import axios from "axios"
+import { LargeNumberLike } from "node:crypto"
 
 export default function PetitionsPage() {
   const [petitions, setPetitions] = useState<PetitionCardProps[]>([])
@@ -123,11 +124,12 @@ interface PetitionCardProps {
   description: string
   tags: string[]
   signatures: number
+  noOfSigns: LargeNumberLike
   status: "open" | "closed" | "resolved"
   createdAt: string
 }
 
-function PetitionCard({petitionId, title, description, tags, signatures, status, createdAt }: PetitionCardProps) {
+function PetitionCard({petitionId, title, description, tags, signatures, noOfSigns, status, createdAt }: PetitionCardProps) {
   const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
   const statusColors = {
     open: "bg-green-100 text-green-800",
@@ -167,7 +169,7 @@ const handleSign = async () => {
 
   
 
-  const progress = Math.min(signatures, 1000) / 10 // percentage out of 1000
+  const progress = Math.min(Number(noOfSigns), 10) * 10 // percentage out of 1000
 
   return (
     <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -187,8 +189,8 @@ const handleSign = async () => {
       </div>
       <div className="mb-2">
         <div className="flex justify-between text-sm mb-1">
-          <span>{signatures} signatures</span>
-          <span>Goal: 1,000</span>
+          <span>{Number(noOfSigns)} signatures</span>
+          <span>Goal: 10</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
