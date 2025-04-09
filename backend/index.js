@@ -11,13 +11,16 @@ import suggestionRoutes from './routes/suggestionRoutes.js';
 import grievanceRoutes from './routes/grievanceRoutes.js';
 import Donation from './models/Transaction.js';
 import axios from "axios";
-import { isAdmin } from "./middleware/auth.js"; // Admin middleware
+import { isAdmin } from "./middleware/auth.js";
 import twilio from "twilio";
 import chatRoutes from "./routes/chatRoutes.js";
 import User from "./models/user.js";
 import discussionRoutes from "./routes/discussionRoutes.js";
 import Discussion from './models/Discussion.js';
 import commentRoutes from './routes/commentRoutes.js';
+import petitionRoutes from './routes/petitionRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -44,6 +47,10 @@ app.use('/api/suggestions', suggestionRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/discussions", discussionRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/petitions', petitionRoutes);
+app.use('/api/projects', projectRoutes);
+
+
 // --- Create Razorpay Order ---
 app.post('/order', async (req, res) => {
   try {
