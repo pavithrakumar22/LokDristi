@@ -21,6 +21,7 @@ import petitionRoutes from "./routes/petitionRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import faceRoutes from "./routes/faceRoutes.js";
 
+import commentRoutes from './routes/commentRoutes.js';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -53,6 +54,7 @@ app.use("/api/petitions", petitionRoutes);
 app.use("/api/projects", projectRoutes);
 app.use('/api/face', faceRoutes);
 
+app.use('/api/comments', commentRoutes);
 // --- Create Razorpay Order ---
 app.post('/order', async (req, res) => {
   try {
@@ -303,6 +305,18 @@ app.get("/api/seed-discussion", async (req, res) => {
   }
 });
 
+app.get("/api/news", async (req, res) => {
+  try {
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbz-4171X5dQNgvl5y0jsnruZVwGQtbwvZh_MrsSS4RkmR5bPfpetFF5TdWOuyc_z1mzFA/exec";
+
+    const response = await fetch(scriptUrl);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 // --- start server ---
 app.listen(PORT, () => {
   console.log("✅ LokDristi backend running on port", PORT);

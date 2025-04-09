@@ -16,7 +16,19 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    domains: [
+      "akm-img-a-in.tosshub.com",
+      "cdn.dnaindia.com",
+    ],
     unoptimized: true,
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/comments/:path*',
+        destination: 'http://localhost:5000/api/comments/:path*',
+      },
+    ];
   },
   experimental: {
     webpackBuildWorker: true,
