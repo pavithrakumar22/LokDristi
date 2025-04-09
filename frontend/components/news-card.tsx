@@ -23,7 +23,6 @@ export function NewsCard({ title, description, url, publishedAt, imageUrl, categ
     month: "short",
     year: "numeric",
   })
-
   const getImageSrc = (url: string | undefined) => {
     if (!url) return "/placeholder.svg";
     return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
@@ -44,7 +43,7 @@ export function NewsCard({ title, description, url, publishedAt, imageUrl, categ
           <div className="absolute top-3 left-3 z-10">
             <Badge className="bg-white/90 text-blue-700 backdrop-blur-sm flex items-center gap-1 px-2 py-1">
               <Calendar className="h-3 w-3" />
-              {formattedDate}
+              {publishedAt.slice(0, 10)}
             </Badge>
           </div>
 
@@ -60,7 +59,7 @@ export function NewsCard({ title, description, url, publishedAt, imageUrl, categ
             alt={title || "News image"}
             className="object-cover w-full h-full rounded"
             onError={(e) => {
-                e.currentTarget.src = "/placeholder.svg";
+                e.currentTarget.src = "https://lokdhristi.s3.us-east-1.amazonaws.com/NEWS.jpg";
             }}
             />
 

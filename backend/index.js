@@ -26,8 +26,8 @@ import fs from "fs";
 import path from "path";
 import votingRoutes from "./routes/votingRoutes.js";
 import commentRoutes from './routes/commentRoutes.js';
-
-
+import petitionRoutes from './routes/petitionRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -77,32 +77,12 @@ app.use('/api/grievances', grievanceRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/discussions", discussionRoutes);
-app.use("/api/petitions", petitionRoutes);
-app.use("/api/projects", projectRoutes);
-app.use("/api/comments",commentRoutes);
-/**
- * @swagger
- * /order:
- *   post:
- *     summary: Create a Razorpay order
- *     tags: [Donations]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               amount:
- *                 type: number
- *               currency:
- *                 type: string
- *     responses:
- *       200:
- *         description: Order created successfully
- *       500:
- *         description: Server error
- */
+app.use('/api/comments', commentRoutes);
+app.use('/api/petitions', petitionRoutes);
+app.use('/api/projects', projectRoutes);
+
+
+// --- Create Razorpay Order ---
 app.post('/order', async (req, res) => {
   try {
     const razorpay = new Razorpay({
@@ -454,7 +434,7 @@ app.get("/api/seed-discussion", async (req, res) => {
 
 app.get("/api/news", async (req, res) => {
   try {
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbz-4171X5dQNgvl5y0jsnruZVwGQtbwvZh_MrsSS4RkmR5bPfpetFF5TdWOuyc_z1mzFA/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbw8VUZqmcofKAfoM-IPqKxOcAWtNvShQyf3ijqW2otBvBU69E2krO12FCtxDuUs7fY_-g/exec";
 
     const response = await fetch(scriptUrl);
     const data = await response.json();
