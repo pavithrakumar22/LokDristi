@@ -1,3 +1,8 @@
+"use client"
+
+import { use } from 'react';
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -7,42 +12,83 @@ import Link from "next/link"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 
+interface ProjectType {
+  id: string
+  title: string
+  description: string
+  department: string
+  contractors: string[]
+  location: string
+  stages: string[]
+  currentStage: number
+  totalFunds: string
+  allocatedFunds: string
+  expenditureSoFar: string
+  status: string
+  startDate: string
+  completionDate: string
+  documents: { name: string; size: string; type: string }[]
+  updates: { date: string; text: string }[]
+  issues: { title: string; severity: string; status: string }[]
+}
+
 export default function ProjectDetailPage({ params }: { params: { id: string } }) {
+  const [project, setProject] = useState<ProjectType | null>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
   // This would normally fetch the project data based on the ID
   // For demo purposes, we're using mock data
-  const project = {
-    id: params.id,
-    title: "Metro Line Extension Phase II",
-    description:
-      "Extension of the metro line from City Center to Airport with 8 new stations. This project aims to reduce traffic congestion and provide faster connectivity to the airport. The extension will cover approximately 18.5 kilometers with modern facilities at all stations.",
-    department: "Urban Transport Authority",
-    contractors: ["Metro Infrastructure Ltd", "Urban Development Corp"],
-    location: "North-Eastern Corridor",
-    stages: ["Planning", "Land Acquisition", "Foundation Work", "Construction", "Testing", "Operational"],
-    currentStage: 2,
-    totalFunds: "₹1,250 Cr",
-    allocatedFunds: "₹450 Cr",
-    expenditureSoFar: "₹320 Cr",
-    status: "active",
-    startDate: "2024-10-15",
-    completionDate: "2027-06-30",
-    documents: [
-      { name: "Project_Proposal.pdf", size: "2.4 MB", type: "Planning" },
-      { name: "Budget_Allocation.xlsx", size: "1.1 MB", type: "Financial" },
-      { name: "Land_Acquisition_Report.pdf", size: "3.7 MB", type: "Legal" },
-      { name: 'Environmental_Impact_Assessment.  size: "3.7 MB', type: "Legal" },
-      { name: "Environmental_Impact_Assessment.pdf", size: "5.2 MB", type: "Environmental" },
-    ],
-    updates: [
-      { date: "2025-01-15", text: "Land acquisition completed for 6 out of 8 stations." },
-      { date: "2024-12-10", text: "Environmental clearance received from regulatory authorities." },
-      { date: "2024-11-05", text: "Project kickoff meeting held with all stakeholders." },
-    ],
-    issues: [
-      { title: "Delay in land acquisition for Station 7", severity: "medium", status: "open" },
-      { title: "Budget revision needed for foundation materials", severity: "low", status: "resolved" },
-    ],
-  }
+  // const project = {
+  //   id: params.id,
+  //   title: "Metro Line Extension Phase II",
+  //   description:
+  //     "Extension of the metro line from City Center to Airport with 8 new stations. This project aims to reduce traffic congestion and provide faster connectivity to the airport. The extension will cover approximately 18.5 kilometers with modern facilities at all stations.",
+  //   department: "Urban Transport Authority",
+  //   contractors: ["Metro Infrastructure Ltd", "Urban Development Corp"],
+  //   location: "North-Eastern Corridor",
+  //   stages: ["Planning", "Land Acquisition", "Foundation Work", "Construction", "Testing", "Operational"],
+  //   currentStage: 2,
+  //   totalFunds: "₹1,250 Cr",
+  //   allocatedFunds: "₹450 Cr",
+  //   expenditureSoFar: "₹320 Cr",
+  //   status: "active",
+  //   startDate: "2024-10-15",
+  //   completionDate: "2027-06-30",
+  //   documents: [
+  //     { name: "Project_Proposal.pdf", size: "2.4 MB", type: "Planning" },
+  //     { name: "Budget_Allocation.xlsx", size: "1.1 MB", type: "Financial" },
+  //     { name: "Land_Acquisition_Report.pdf", size: "3.7 MB", type: "Legal" },
+  //     { name: 'Environmental_Impact_Assessment.  size: "3.7 MB', type: "Legal" },
+  //     { name: "Environmental_Impact_Assessment.pdf", size: "5.2 MB", type: "Environmental" },
+  //   ],
+  //   updates: [
+  //     { date: "2025-01-15", text: "Land acquisition completed for 6 out of 8 stations." },
+  //     { date: "2024-12-10", text: "Environmental clearance received from regulatory authorities." },
+  //     { date: "2024-11-05", text: "Project kickoff meeting held with all stakeholders." },
+  //   ],
+  //   issues: [
+  //     { title: "Delay in land acquisition for Station 7", severity: "medium", status: "open" },
+  //     { title: "Budget revision needed for foundation materials", severity: "low", status: "resolved" },
+  //   ],
+  // }
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const res = await fetch(`http://localhost:5001/api/projects/${params.id}`) // update with your backend URL
+        if (!res.ok) throw new Error("Failed to fetch project data")
+        const data = await res.json()
+        setProject(data)
+      } catch (err) {
+        console.error("Error fetching project:", err)
+        router.push("/projects") // redirect if project not found or error
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProject()
+  }, [params.id, router])
 
   const statusColors = {
     active: "bg-green-100 text-green-800",
@@ -51,17 +97,19 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
     cancelled: "bg-red-100 text-red-800",
   }
 
-  const formattedStartDate = new Date(project.startDate).toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-
-  const formattedCompletionDate = new Date(project.completionDate).toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
+  const formattedStartDate = project
+    ? new Date(project.startDate).toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }) : ""
+  const formattedCompletionDate: string = project 
+      ? (new Date(project.completionDate).toLocaleDateString("en-IN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }))
+      : "";
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -78,12 +126,12 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 </Button>
               </Link>
               <span
-                className={`text-xs px-3 py-1 rounded-full ${statusColors[project.status as keyof typeof statusColors]}`}
+                className={`text-xs px-3 py-1 rounded-full ${project ? statusColors[project.status as keyof typeof statusColors] : ""}`}
               >
-                {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                {project && project.status.charAt(0).toUpperCase() + project.status.slice(1)}
               </span>
             </div>
-            <h1 className="text-3xl font-bold">{project.title}</h1>
+            {project && <h1 className="text-3xl font-bold">{project.title}</h1>}
           </div>
           <div className="flex gap-2">
             <Button variant="outline">Generate Report</Button>
@@ -95,14 +143,14 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-6">
               <h2 className="text-xl font-bold mb-4">Project Overview</h2>
-              <p className="text-gray-700 mb-6">{project.description}</p>
+              {project && <p className="text-gray-700 mb-6">{project.description}</p>}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="flex items-start gap-2">
                   <Building className="h-5 w-5 text-gray-400 mt-0.5" />
                   <div>
                     <div className="text-sm text-gray-500">Department</div>
-                    <div>{project.department}</div>
+                    <div>{project?.department}</div>
                   </div>
                 </div>
 
@@ -110,7 +158,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                   <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
                   <div>
                     <div className="text-sm text-gray-500">Location</div>
-                    <div>{project.location}</div>
+                    <div>{project ? project.location : "N/A"}</div>
                   </div>
                 </div>
 
@@ -128,7 +176,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                   <Clock className="h-5 w-5 text-gray-400 mt-0.5" />
                   <div>
                     <div className="text-sm text-gray-500">Current Stage</div>
-                    <div>{project.stages[project.currentStage]}</div>
+                    <div>{project ? project.stages[project.currentStage] : "N/A"}</div>
                   </div>
                 </div>
               </div>
@@ -136,7 +184,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
               <h3 className="font-bold text-lg mb-3">Project Journey</h3>
               <div className="relative pb-8">
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200 ml-2.5"></div>
-                {project.stages.map((stage, index) => (
+                {project?.stages.map((stage, index) => (
                   <div key={index} className="relative flex items-start mb-6 last:mb-0">
                     <div
                       className={`w-5 h-5 rounded-full flex-shrink-0 z-10 ${
@@ -163,15 +211,15 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="text-sm text-gray-500 mb-1">Total Budget</div>
-                  <div className="text-2xl font-bold text-blue-600">{project.totalFunds}</div>
+                  <div className="text-2xl font-bold text-blue-600">{project ? project.totalFunds : "N/A"}</div>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="text-sm text-gray-500 mb-1">Allocated</div>
-                  <div className="text-2xl font-bold text-green-600">{project.allocatedFunds}</div>
+                  <div className="text-2xl font-bold text-green-600">{project ? project.allocatedFunds : "N/A"}</div>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="text-sm text-gray-500 mb-1">Expenditure</div>
-                  <div className="text-2xl font-bold text-amber-600">{project.expenditureSoFar}</div>
+                  <div className="text-2xl font-bold text-amber-600">{project ? project.expenditureSoFar : "N/A"}</div>
                 </div>
               </div>
 
@@ -180,9 +228,8 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                   <span>Budget Utilization</span>
                   <span>
                     {Math.round(
-                      (Number.parseInt(project.expenditureSoFar.replace(/[^\d]/g, "")) /
-                        Number.parseInt(project.totalFunds.replace(/[^\d]/g, ""))) *
-                        100,
+                      (project ? Number.parseInt(project.expenditureSoFar.replace(/[^\d]/g, "")) : 0) /
+                        Number.parseInt(project?.totalFunds.replace(/[^\d]/g, "") || "0") * 100
                     )}
                     %
                   </span>
@@ -191,7 +238,15 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                   <div
                     className="bg-blue-600 h-2.5 rounded-full"
                     style={{
-                      width: `${Math.round((Number.parseInt(project.expenditureSoFar.replace(/[^\d]/g, "")) / Number.parseInt(project.totalFunds.replace(/[^\d]/g, ""))) * 100)}%`,
+                      width: `${
+                        project
+                          ? Math.round(
+                              (Number.parseInt(project.expenditureSoFar.replace(/[^\d]/g, "")) /
+                                Number.parseInt(project.totalFunds.replace(/[^\d]/g, ""))) *
+                                100
+                            )
+                          : 0
+                      }%`,
                     }}
                   ></div>
                 </div>
@@ -209,7 +264,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 <Card className="p-6">
                   <h2 className="text-xl font-bold mb-4">Project Updates</h2>
                   <div className="space-y-4">
-                    {project.updates.map((update, index) => (
+                    {project?.updates.map((update, index) => (
                       <div key={index} className="border-l-4 border-blue-600 pl-4 py-1">
                         <div className="text-sm text-gray-500 mb-1">{update.date}</div>
                         <p>{update.text}</p>
@@ -223,7 +278,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 <Card className="p-6">
                   <h2 className="text-xl font-bold mb-4">Supporting Documents</h2>
                   <div className="space-y-3">
-                    {project.documents.map((doc, index) => (
+                    {project?.documents.map((doc, index) => (
                       <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded">
                         <div className="flex items-center gap-3">
                           <FileText className="h-5 w-5 text-gray-400" />
@@ -248,7 +303,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 <Card className="p-6">
                   <h2 className="text-xl font-bold mb-4">Issues & Challenges</h2>
                   <div className="space-y-4">
-                    {project.issues.map((issue, index) => (
+                    {project?.issues.map((issue, index) => (
                       <div key={index} className="border rounded-lg p-4">
                         <div className="flex justify-between items-start mb-2">
                           <h3 className="font-medium">{issue.title}</h3>
@@ -280,7 +335,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             <Card className="p-6">
               <h3 className="text-lg font-bold mb-4">Contractors</h3>
               <div className="space-y-3">
-                {project.contractors.map((contractor, index) => (
+                {project?.contractors.map((contractor, index) => (
                   <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                     <Users className="h-5 w-5 text-gray-400" />
                     <span>{contractor}</span>
