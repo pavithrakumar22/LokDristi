@@ -1,11 +1,35 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import PetitionForm from "@/components/petition-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import axios from "axios"
 
 export default function PetitionsPage() {
+  const [petitions, setPetitions] = useState<PetitionCardProps[]>([])
+  const [loading, setLoading] = useState(true)
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
+
+  useEffect(() => {
+    const fetchPetitions = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/petitions`) // Change to your actual API endpoint
+        const data = await response.json()
+        setPetitions(data)
+      } catch (error) {
+        console.error("Failed to fetch petitions:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPetitions()
+  }, [])
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
@@ -39,30 +63,15 @@ export default function PetitionsPage() {
                 <Card className="p-6">
                   <h2 className="text-2xl font-bold mb-6">Active Petitions</h2>
                   <div className="space-y-6">
-                    <PetitionCard
-                      title="Improve Road Safety in Rajaji Nagar"
-                      description="We need better street lighting and speed bumps to prevent accidents"
-                      tags={["Infrastructure", "Safety", "Urban Planning"]}
-                      signatures={750}
-                      status="open"
-                      createdAt="2025-03-15"
-                    />
-                    <PetitionCard
-                      title="Clean Water Supply for Hebbal Area"
-                      description="Residents are facing contaminated water issues for the past 3 months"
-                      tags={["Water", "Health", "Civic Issues"]}
-                      signatures={1000}
-                      status="resolved"
-                      createdAt="2025-02-10"
-                    />
-                    <PetitionCard
-                      title="More Public Parks in Electronic City"
-                      description="Our growing neighborhood needs more green spaces for families"
-                      tags={["Environment", "Urban Planning"]}
-                      signatures={430}
-                      status="open"
-                      createdAt="2025-04-01"
-                    />
+                  {loading ? (
+                      <p>Loading petitions...</p>
+                    ) : petitions.length > 0 ? (
+                      petitions.map((petition, index) => (
+                        <PetitionCard key={index} {...petition} />
+                      ))
+                    ) : (
+                      <p>No petitions found.</p>
+                    )}
                   </div>
                 </Card>
               </TabsContent>
@@ -109,6 +118,7 @@ export default function PetitionsPage() {
 }
 
 interface PetitionCardProps {
+  petitionId: string
   title: string
   description: string
   tags: string[]
@@ -117,7 +127,8 @@ interface PetitionCardProps {
   createdAt: string
 }
 
-function PetitionCard({ title, description, tags, signatures, status, createdAt }: PetitionCardProps) {
+function PetitionCard({petitionId, title, description, tags, signatures, status, createdAt }: PetitionCardProps) {
+  const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
   const statusColors = {
     open: "bg-green-100 text-green-800",
     closed: "bg-red-100 text-red-800",
@@ -129,6 +140,32 @@ function PetitionCard({ title, description, tags, signatures, status, createdAt 
     month: "long",
     day: "numeric",
   })
+
+
+const handleSign = async () => {
+  try {
+    const token = localStorage.getItem("token")
+
+    const res = await axios.post(`${BASE_URL}/api/petitions/support/${petitionId}`, {},  {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (res.status === 200) {
+      alert("Thank you for your support!")
+      // You can refresh data or update UI here
+    } else {
+      alert(res.data.message || "Failed to support the petition.")
+    }
+  } catch (err: any) {
+    console.error("Error signing petition:", err)
+    alert(err.response?.data?.message || "Something went wrong. Please try again later.")
+  }
+}
+
+  
 
   const progress = Math.min(signatures, 1000) / 10 // percentage out of 1000
 
@@ -160,7 +197,7 @@ function PetitionCard({ title, description, tags, signatures, status, createdAt 
       <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
         <span>Created: {formattedDate}</span>
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm">
+          <Button onClick={handleSign} variant="outline" size="sm">
             Sign
           </Button>
           <Button variant="outline" size="sm">
