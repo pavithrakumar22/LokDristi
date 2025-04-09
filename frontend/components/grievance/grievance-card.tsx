@@ -146,7 +146,7 @@ export default function GrievanceCard({
               <Button
                 variant={userHasUpvoted ? "default" : "outline"}
                 size="sm"
-                className={`flex items-center gap-2 ${
+                className={`mt-2 flex items-center gap-2 ${
                   userHasUpvoted 
                     ? "bg-blue-600 hover:bg-blue-700 text-white" 
                     : "border-blue-200 text-blue-600 hover:border-blue-300"
