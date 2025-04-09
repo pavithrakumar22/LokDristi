@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { BotIcon as Robot, X, Send, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FloatingButton } from "@/components/ui/floating-button"
 import { Textarea } from "@/components/ui/textarea"
+import ReactMarkdown from 'react-markdown'
 
 type Message = {
   id: string
@@ -117,6 +117,25 @@ const ChatbotButton = () => {
     }
   }, [isOpen])
 
+  // Custom renderer for markdown components
+  const MarkdownComponents = {
+    // Override p tag to match the text styling
+    p: (props: any) => <p className="text-sm" {...props} />,
+    // Add appropriate styling for bold text
+    strong: (props: any) => <strong className="font-bold" {...props} />,
+    // Add styling for code blocks
+    code: (props: any) => <code className="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono" {...props} />,
+    // Add styling for links
+    a: (props: any) => <a className="text-blue-600 hover:underline" {...props} target="_blank" rel="noopener noreferrer" />,
+    // Add styling for lists
+    ul: (props: any) => <ul className="list-disc pl-5 text-sm space-y-1" {...props} />,
+    ol: (props: any) => <ol className="list-decimal pl-5 text-sm space-y-1" {...props} />,
+    // Add styling for headings
+    h1: (props: any) => <h1 className="text-lg font-bold mt-2 mb-1" {...props} />,
+    h2: (props: any) => <h2 className="text-base font-bold mt-2 mb-1" {...props} />,
+    h3: (props: any) => <h3 className="text-sm font-bold mt-1 mb-1" {...props} />
+  }
+
   return (
     <>
       <div className="fixed bottom-6 right-6 z-50">
@@ -163,7 +182,11 @@ const ChatbotButton = () => {
                         message.isUser ? "bg-blue-50 ml-auto" : "bg-gray-100"
                       } p-3 rounded-lg max-w-[85%] break-words`}
                     >
-                      <p className={`text-sm ${message.isUser ? "text-blue-800" : "text-gray-800"}`}>{message.content}</p>
+                      <div className={`${message.isUser ? "text-blue-800" : "text-gray-800"}`}>
+                        <ReactMarkdown components={MarkdownComponents}>
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
                       <p className="text-xs text-gray-500 mt-1">
                         {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </p>
