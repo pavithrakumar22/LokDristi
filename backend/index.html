@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live People Detection</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+  <style>
+    video {
+      width: 720px;
+      height: auto;
+      border: 3px solid #00f;
+    }
+    #alert {
+      color: rgb(197, 127, 127);
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live People Detection (COCO-SSD)</h1>
+  <video id="video" autoplay muted></video>
+  <p id="alert"></p>
+
+  <script>
+    const video = document.getElementById("video");
+    const alertBox = document.getElementById("alert");
+
+    let stream;
+    let model;
+
+    // Load camera
+    async function setupCamera() {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      });
+      video.srcObject = stream;
+      return new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          resolve(video);
+        };
+      });
+    }
+
+    // Stop camera
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        video.srcObject = null;
+      }
+    }
+
+    async function detectPeople() {
+      const predictions = await model.detect(video);
+      const people = predictions.filter((p) => p.class === "person");
+
+      if (people.length >= 2) {
+        stopCamera();
+        alertBox.innerText = ` Detected ${people.length} people. Stopping video!`;
+        return;
+      }
+
+      requestAnimationFrame(detectPeople);
+    }
+
+    async function main() {
+      await setupCamera();
+      model = await cocoSsd.load();
+      console.log("✅ COCO-SSD Model Loaded");
+      detectPeople();
+    }
+
+    main();
+  </script>
+</body>
+</html>
