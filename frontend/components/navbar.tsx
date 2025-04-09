@@ -20,7 +20,8 @@ import {
   Lightbulb,
   HandCoins,
   FolderKanban,
-  Columns4
+  Columns4,
+  Newspaper
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -79,6 +80,7 @@ const Navbar = () => {
     { name: t("Projects"), href: "/projects", icon: <FolderKanban size={18} /> },
     { name: t("donate"), href: "/DonatePage", icon: <HandCoins size={18} /> },
     { name: t("suggestions"), href: "/suggestions", icon: <Lightbulb size={18} /> },
+    { name: t("news"), href: "/news", icon: <Newspaper size={18} /> },
   ]
 
   // Mock user data

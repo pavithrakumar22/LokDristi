@@ -296,7 +296,7 @@ app.get("/api/seed-discussion", async (req, res) => {
 
 app.get("/api/news", async (req, res) => {
   try {
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbz-4171X5dQNgvl5y0jsnruZVwGQtbwvZh_MrsSS4RkmR5bPfpetFF5TdWOuyc_z1mzFA/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbw8VUZqmcofKAfoM-IPqKxOcAWtNvShQyf3ijqW2otBvBU69E2krO12FCtxDuUs7fY_-g/exec";
 
     const response = await fetch(scriptUrl);
     const data = await response.json();
