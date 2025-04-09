@@ -18,6 +18,7 @@ import User from "./models/user.js";
 import discussionRoutes from "./routes/discussionRoutes.js";
 import Discussion from './models/Discussion.js';
 import commentRoutes from './routes/commentRoutes.js';
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
