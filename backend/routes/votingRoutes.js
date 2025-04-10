@@ -3,6 +3,7 @@ import express from "express";
 export default function votingRoutes(votingContract) {
   const router = express.Router();
 
+  // ✅ Start Election
   router.post("/start-election", async (req, res) => {
     const { candidates } = req.body;
 
@@ -14,6 +15,17 @@ export default function votingRoutes(votingContract) {
       const tx = await votingContract.startElection(candidates);
       await tx.wait();
       res.json({ message: "Election started!", txHash: tx.hash });
+    } catch (err) {
+      res.status(500).json({ error: err.reason || err.message });
+    }
+  });
+
+  // ✅ End Election
+  router.post("/end-election", async (req, res) => {
+    try {
+      const tx = await votingContract.endElection();
+      await tx.wait();
+      res.json({ message: "Election ended!", txHash: tx.hash });
     } catch (err) {
       res.status(500).json({ error: err.reason || err.message });
     }
