@@ -26,6 +26,7 @@ import votingRoutes from "./routes/votingRoutes.js";
 import commentRoutes from './routes/commentRoutes.js';
 import petitionRoutes from './routes/petitionRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
+import faceRoutes from './routes/faceRoutes.js';
 
 dotenv.config();
 const app = express();

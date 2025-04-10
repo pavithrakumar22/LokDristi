@@ -81,6 +81,16 @@ export default function AdminLayout({ children, activeSection, setActiveSection 
       icon: <MessageSquare className="h-5 w-5" />,
       section: "grievances",
     },
+    {
+      name: "Users",
+      icon: <Users className="h-5 w-5" />,
+      section: "users",
+    },
+    {
+      name: "Settings",
+      icon: <Settings className="h-5 w-5" />,
+      section: "settings",
+    },
   ]
 
   const handleNavigation = (section: string) => {
@@ -177,10 +187,10 @@ export default function AdminLayout({ children, activeSection, setActiveSection 
                 {item.icon}
                 <span>{item.name}</span>
                 {item.section === "suggestions" && (
-                  <Badge className="ml-auto bg-blue-100 text-blue-600 hover:bg-blue-200">1</Badge>
+                  <Badge className="ml-auto bg-blue-100 text-blue-600 hover:bg-blue-200">156</Badge>
                 )}
                 {item.section === "grievances" && (
-                  <Badge className="ml-auto bg-red-100 text-red-600 hover:bg-red-200">1</Badge>
+                  <Badge className="ml-auto bg-red-100 text-red-600 hover:bg-red-200">89</Badge>
                 )}
               </button>
             ))}
