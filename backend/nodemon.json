@@ -1,0 +1,6 @@
+{
+    "watch": ["controllers", "routes", "utils", "models"],
+    "ext": "js,json",
+    "ignore": ["venv", "scripts", "__pycache__"]
+}
+  
