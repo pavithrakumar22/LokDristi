@@ -17,8 +17,6 @@ import chatRoutes from "./routes/chatRoutes.js";
 import User from "./models/user.js";
 import discussionRoutes from "./routes/discussionRoutes.js";
 import Discussion from './models/Discussion.js';
-import petitionRoutes from "./routes/petitionRoutes.js";
-import projectRoutes from "./routes/projectRoutes.js";
 import faceRoutes from "./routes/faceRoutes.js";
 import swaggerSpec from './swagger.js';
 import swaggerUi from 'swagger-ui-express';
