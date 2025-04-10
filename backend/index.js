@@ -17,8 +17,6 @@ import chatRoutes from "./routes/chatRoutes.js";
 import User from "./models/user.js";
 import discussionRoutes from "./routes/discussionRoutes.js";
 import Discussion from './models/Discussion.js';
-import petitionRoutes from "./routes/petitionRoutes.js";
-import projectRoutes from "./routes/projectRoutes.js";
 import swaggerSpec from './swagger.js';
 import swaggerUi from 'swagger-ui-express';
 import { ethers } from "ethers";
@@ -343,6 +341,15 @@ app.get('/donations/:aadhaarNumber', async (req, res) => {
   } catch (error) {
     console.error('Error fetching donations:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/donations', async (req, res) => {
+  try {
+    const donations = await Donation.find().sort({ createdAt: -1 }); // Optional: latest first
+    res.json(donations);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch donations' });
   }
 });
 

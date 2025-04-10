@@ -27,10 +27,30 @@ const submitGrievance = async (req, res) => {
 // Get all grievances
 const getAllGrievances = async (req, res) => {
   try {
-    const grievances = await Grievance.find().populate('user', 'name email phone aadhaarNo');
-    res.json(grievances);
+    const grievances = await Grievance.find()
+      .populate('user', 'name email phone aadhaarNo')
+      .select('-__v'); // Exclude version key if not needed
+    
+    // Transform the data if needed (optional)
+    const formattedGrievances = grievances.map(grievance => ({
+      grievanceId: grievance._id.toString(),
+      user: grievance.user, // Populated user object
+      grievanceType: grievance.grievanceType,
+      title: grievance.title,
+      description: grievance.description,
+      desiredOutcome: grievance.desiredOutcome,
+      witness: grievance.witness,
+      fileUrl: grievance.fileUrl,
+      upvotesCount: grievance.upvotesCount.toString(),
+      upvotedUsers: grievance.upvotedUsers,
+      createdAt: grievance.createdAt.toISOString(),
+      status: grievance.status // Explicit status field
+    }));
+
+    res.json(formattedGrievances);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching grievances', error });
+    console.error('Error fetching grievances:', error);
+    res.status(500).json({ message: 'Error fetching grievances', error: error.message });
   }
 };
 

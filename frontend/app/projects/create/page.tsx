@@ -20,8 +20,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { X, Upload, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
+
 
 const DEPARTMENTS = [
   "Urban Development",
@@ -42,6 +41,7 @@ export default function CreateProjectPage() {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [department, setDepartment] = useState("")
+  const [location, setLocation] = useState("")
   const [contractors, setContractors] = useState<string[]>([""])
   const [stages, setStages] = useState<string[]>(["Planning", "Execution", "Completion"])
   const [totalFunds, setTotalFunds] = useState("")
@@ -49,6 +49,9 @@ export default function CreateProjectPage() {
   const [completionDate, setCompletionDate] = useState("")
   const [documents, setDocuments] = useState<File[]>([])
   const [showSuccess, setShowSuccess] = useState(false)
+  const [updates, setUpdates] = useState([{ date: "", text: "" }])
+const [issues, setIssues] = useState([{ title: "", severity: "", status: "" }])
+
 
   const handleAddContractor = () => {
     setContractors([...contractors, ""])
@@ -93,27 +96,61 @@ export default function CreateProjectPage() {
     setDocuments(documents.filter((file) => file !== fileToRemove))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would normally submit the form data to your backend
-    console.log({
-      title,
-      description,
-      department,
-      contractors: contractors.filter((c) => c.trim() !== ""),
-      stages: stages.filter((s) => s.trim() !== ""),
-      totalFunds,
-      startDate,
-      completionDate,
-      documents,
-    })
-    setShowSuccess(true)
+  
+    try {
+      const formData = new FormData()
+  
+      formData.append("title", title)
+      formData.append("description", description)
+      formData.append("department", department)
+      formData.append("location", location)
+      formData.append("totalFunds", totalFunds)
+      formData.append("allocatedFunds", "160CR")
+      formData.append("expenditureSoFar", "60CR")
+      formData.append("currentStage", "1")
+      formData.append("status", "active")
+      formData.append("startDate", startDate)
+      formData.append("completionDate", completionDate)
+  
+      contractors.forEach((contractor, index) => {
+        formData.append(`contractors[${index}]`, contractor)
+      })
+  
+      stages.forEach((stage, index) => {
+        formData.append(`stages[${index}]`, stage)
+      })
+  
+      documents.forEach((file) => {
+        formData.append("files", file) // your backend will receive this as `req.files`
+      })
+
+      
+      formData.append("updates", JSON.stringify(updates))
+      formData.append("issues", JSON.stringify(issues))
+
+  
+      const res = await fetch("http://localhost:5001/api/projects/create", {
+        method: "POST",
+        body: formData,
+      })
+  
+      if (!res.ok) throw new Error("Project creation failed")
+  
+      const data = await res.json()
+      console.log("Project created:", data)
+      setShowSuccess(true)
+    } catch (err) {
+      console.error("Submission error:", err)
+      alert("Something went wrong. Please try again.")
+    }
   }
+  
 
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <Navbar />
 
 
       {/* Hero Section */}
@@ -206,6 +243,18 @@ export default function CreateProjectPage() {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  placeholder="Enter the Location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  required
+                />
+              </div>
+
+                  
+              <div className="space-y-2">
                 <Label>Project Stages</Label>
                 <div className="space-y-3">
                   {stages.map((stage, index) => (
@@ -268,6 +317,92 @@ export default function CreateProjectPage() {
                     required
                   />
                 </div>
+                <div className="space-y-2">
+              <Label>Project Updates</Label>
+              <div className="space-y-3">
+                {updates.map((update, index) => (
+                  <div key={index} className="grid md:grid-cols-2 gap-2">
+                    <Input
+                      type="date"
+                      value={update.date}
+                      onChange={(e) => {
+                        const newUpdates = [...updates]
+                        newUpdates[index].date = e.target.value
+                        setUpdates(newUpdates)
+                      }}
+                      required
+                    />
+                    <Input
+                      placeholder="Update description"
+                      value={update.text}
+                      onChange={(e) => {
+                        const newUpdates = [...updates]
+                        newUpdates[index].text = e.target.value
+                        setUpdates(newUpdates)
+                      }}
+                      required
+                    />
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setUpdates([...updates, { date: "", text: "" }])}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Update
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Project Issues</Label>
+              <div className="space-y-3">
+                {issues.map((issue, index) => (
+                  <div key={index} className="grid md:grid-cols-3 gap-2">
+                    <Input
+                      placeholder="Issue Title"
+                      value={issue.title}
+                      onChange={(e) => {
+                        const newIssues = [...issues]
+                        newIssues[index].title = e.target.value
+                        setIssues(newIssues)
+                      }}
+                      required
+                    />
+                    <Input
+                      placeholder="Severity (low/medium/high)"
+                      value={issue.severity}
+                      onChange={(e) => {
+                        const newIssues = [...issues]
+                        newIssues[index].severity = e.target.value
+                        setIssues(newIssues)
+                      }}
+                      required
+                    />
+                    <Input
+                      placeholder="Status (open/resolved)"
+                      value={issue.status}
+                      onChange={(e) => {
+                        const newIssues = [...issues]
+                        newIssues[index].status = e.target.value
+                        setIssues(newIssues)
+                      }}
+                      required
+                    />
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIssues([...issues, { title: "", severity: "", status: "" }])}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Issue
+                </Button>
+              </div>
+            </div>
+
+
               </div>
 
               <div className="space-y-2">
@@ -321,13 +456,12 @@ export default function CreateProjectPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <Link href="/projects">
+            <Link href="/admin/projects">
               <AlertDialogAction>View Projects</AlertDialogAction>
             </Link>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <Footer />
     </div>
   )
 }

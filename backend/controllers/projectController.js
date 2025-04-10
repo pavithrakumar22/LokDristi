@@ -24,6 +24,9 @@ export const createProject = async (req, res) => {
     } = req.body;
 
     let docEntries = documents || [];
+    let updatesEntries = JSON.parse(req.body.updates || "[]");
+    let issuesEntries = JSON.parse(req.body.issues || "[]");
+
 
     // If files are uploaded via multipart/form-data
     if (req.files && req.files.length > 0) {
@@ -51,8 +54,8 @@ export const createProject = async (req, res) => {
       startDate,
       completionDate,
       documents: docEntries,
-      updates,
-      issues,
+      updates: updatesEntries,
+      issues: issuesEntries,
     });
 
     await project.save();
@@ -157,7 +160,7 @@ export const updateProject = async (req, res) => {
 // Delete a project
 export const deleteProject = async (req, res) => {
   try {
-    const deleted = await Project.findByIdAndDelete(req.params.id);
+    const deleted = await Project.findOneAndDelete({ projectId: req.params.id });
     if (!deleted) {
       return res.status(404).json({ message: 'Project not found' });
     }

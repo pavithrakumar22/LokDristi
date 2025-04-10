@@ -57,26 +57,6 @@ const router = useRouter()
       },
     },
     {
-      id: "updates",
-      title: "Government Updates & Policy Forum",
-      description:
-        "Stay informed about the latest government policies and updates. Participate in discussions and provide feedback through upvotes and downvotes to help shape policy decisions.",
-      icon: <FileTextIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
-      details: [
-        "Categorized policy updates from all government departments",
-        "Interactive discussion forums with moderated conversations",
-        "Voting system to gauge public sentiment on policies",
-        "Notification system for updates in your areas of interest",
-        "Direct feedback channel to policy makers",
-      ],
-      stats: {
-        policies: "500+",
-        discussions: "2,300+",
-        participants: "50,000+",
-      },
-    },
-    {
       id: "voting",
       title: "Secure Public Voting System",
       description:
