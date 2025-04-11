@@ -30,12 +30,13 @@ export default function FaceCapture() {
     formData.append('image', file); // 👈 name must match multer field name
   
     try {
-      const res = await axios.post('http://localhost:5000/api/face/upload-face', formData, {
+      const res = await axios.post('http://localhost:5001/api/face/upload-face', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       console.log(res.data);
+      localStorage.setItem('voterId', voterId);
       alert('Upload successful!');
     } catch (err) {
       console.error(err);

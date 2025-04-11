@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import Webcam from "react-webcam"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,14 +18,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Check, UserCheck, Vote } from "lucide-react"
+import axios from "axios"
 
-// Mock data for candidates - replace with your API call
-const candidates = [
-  { id: 1, name: "Jane Smith", party: "Progressive Party", image: "/placeholder.svg?height=100&width=100" },
-  { id: 2, name: "John Doe", party: "Conservative Party", image: "/placeholder.svg?height=100&width=100" },
-  { id: 3, name: "Alex Johnson", party: "Liberal Party", image: "/placeholder.svg?height=100&width=100" },
-  { id: 4, name: "Sam Wilson", party: "Green Party", image: "/placeholder.svg?height=100&width=100" },
-]
+interface Candidate {
+  id: string
+  name: string
+}
 
 export default function FaceVerification() {
   const [voterId, setVoterId] = useState("")
@@ -33,41 +31,97 @@ export default function FaceVerification() {
   const [error, setError] = useState("")
   const [capturing, setCapturing] = useState(false)
   const [step, setStep] = useState("verification") // verification, candidates, success
-  const [selectedCandidate, setSelectedCandidate] = useState<number | null>(null)
+  const [selectedCandidate, setSelectedCandidate] = useState<string>("") // Use candidate id or name
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [voteSubmitted, setVoteSubmitted] = useState(false)
+  const [candidates, setCandidates] = useState<Candidate[]>([])
+  const [loadingCandidates, setLoadingCandidates] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
+  const [electionActive, setElectionActive] = useState<boolean | null>(null)
 
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+
   const webcamRef = useRef<Webcam>(null)
+  useEffect(() => {
+    const getElectionStatus = async () => {
+      try {
+        const res = await fetch("http://localhost:5001/api/election-status")
+        const data = await res.json()
+        setElectionActive(data.active) // assuming response is { active: true/false }
+      } catch (err) {
+        console.error("Failed to fetch election status:", err)
+        setElectionActive(false) // fallback to not active
+      }
+    }
+  
+    getElectionStatus()
+  }, [])
+  
+
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      try {
+        const response = await fetch("http://localhost:5001/api/candidates")
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        console.log("Candidates fetched:", data)
+
+        // Extract candidates array and transform strings to Candidate objects
+        const candidateList = data.candidates && Array.isArray(data.candidates) ? data.candidates : []
+        const processedCandidates = candidateList.map((candidate: string, index: number): Candidate => ({
+          id: `candidate-${index}`, // Generate a unique ID
+          name: candidate, // Use the string as the name
+        }))
+
+        setCandidates(processedCandidates)
+      } catch (err) {
+        console.error("Failed to fetch candidates:", err)
+        setFetchError("Failed to load candidates. Please try again later.")
+      } finally {
+        setLoadingCandidates(false)
+      }
+    }
+
+    fetchCandidates()
+  }, [])
 
   const captureAndVerify = async () => {
     if (!voterId.trim()) {
       setError("Please enter your Voter ID")
       return
     }
-
+  
     setCapturing(true)
     setError("")
     const capturedImages: string[] = []
-
-    for (let i = 0; i < 5; i++) {
+  
+    const startTime = Date.now()
+    const duration = 10000 // 10 seconds
+  
+    while (Date.now() - startTime < duration) {
       const imageSrc = webcamRef.current?.getScreenshot()
       if (imageSrc) capturedImages.push(imageSrc)
-      await new Promise((res) => setTimeout(res, 2000))
+      await new Promise((res) => setTimeout(res, 1500)) // ~1.5s interval
     }
-
+  
     try {
-      // In a real app, this would call your API
-      // For demo purposes, we'll simulate a successful verification
-      // const res = await axios.post(`${BASE_URL}/api/face/verify-face`, {
-      //   voterId,
-      //   capturedImages,
-      // });
-
-      // Simulating API response
-      const verified = true // res.data.verified
-
+      const res = await axios.post("http://localhost:5001/api/face/verify-face", {
+        voterId,
+        capturedImages,
+      })
+  
+      const verified = res.data.verified
+      console.log("**********" + verified)
+  
       if (verified) {
+        const res = await fetch('http://localhost:5001/api/store-vote', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ voterId }),
+        });
         setVerified(true)
         setStep("candidates")
       } else {
@@ -77,12 +131,13 @@ export default function FaceVerification() {
       console.error(err)
       setError("Error verifying face")
     }
-
+  
     setCapturing(false)
   }
+  
 
   const handleVote = () => {
-    if (selectedCandidate === null) {
+    if (!selectedCandidate) {
       setError("Please select a candidate")
       return
     }
@@ -91,11 +146,8 @@ export default function FaceVerification() {
 
   const confirmVote = async () => {
     try {
-      // In a real app, this would call your API to record the vote
-      // const res = await axios.post(`${BASE_URL}/api/votes`, {
-      //   voterId,
-      //   candidateId: selectedCandidate,
-      // });
+      const selected = candidates.find((c) => c.id === selectedCandidate)
+      console.log("Submitting vote for:", selected?.name)
 
       setVoteSubmitted(true)
       setStep("success")
@@ -109,6 +161,23 @@ export default function FaceVerification() {
 
   return (
     <div className="container max-w-4xl mx-auto p-6">
+{electionActive === null && (
+  <p className="text-center p-10">Checking election status...</p>
+)}
+
+{!electionActive && (
+  <div className="container max-w-4xl mx-auto p-6 text-center">
+    <Card>
+      <CardHeader>
+        <CardTitle>Election is Inactive</CardTitle>
+        <CardDescription>
+          There is currently no active election. Please check back later.
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  </div>
+)}
+
       {step === "verification" && (
         <Card className="w-full">
           <CardHeader>
@@ -166,39 +235,39 @@ export default function FaceVerification() {
             <CardDescription>Your identity has been verified. Please select a candidate to vote for.</CardDescription>
           </CardHeader>
           <CardContent>
-            <RadioGroup
-              value={selectedCandidate?.toString()}
-              onValueChange={(value) => {
-                setSelectedCandidate(Number.parseInt(value))
-                setError("")
-              }}
-              className="space-y-4"
-            >
-              {candidates.map((candidate) => (
-                <div
-                  key={candidate.id}
-                  className="flex items-center space-x-4 border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <RadioGroupItem value={candidate.id.toString()} id={`candidate-${candidate.id}`} />
-                  <img
-                    src={candidate.image || "/placeholder.svg"}
-                    alt={candidate.name}
-                    className="h-16 w-16 rounded-full object-cover"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor={`candidate-${candidate.id}`} className="text-lg font-medium">
+            {loadingCandidates ? (
+              <p>Loading candidates...</p>
+            ) : fetchError ? (
+              <p className="text-sm font-medium text-destructive">{fetchError}</p>
+            ) : candidates.length === 0 ? (
+              <p>No candidates available.</p>
+            ) : (
+              <RadioGroup
+                value={selectedCandidate}
+                onValueChange={(value) => {
+                  setSelectedCandidate(value)
+                  setError("")
+                }}
+                className="space-y-4"
+              >
+                {candidates.map((candidate) => (
+                  <div
+                    key={candidate.id}
+                    className="flex items-center space-x-4 border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+                  >
+                    <RadioGroupItem value={candidate.id} id={`radio-${candidate.id}`} />
+                    <Label htmlFor={`radio-${candidate.id}`} className="flex-1 text-lg font-medium cursor-pointer">
                       {candidate.name}
+                      <p className="text-sm text-muted-foreground">Independent</p>
                     </Label>
-                    <p className="text-sm text-muted-foreground">{candidate.party}</p>
                   </div>
-                </div>
-              ))}
-            </RadioGroup>
-
+                ))}
+              </RadioGroup>
+            )}
             {error && <p className="mt-4 text-sm font-medium text-destructive">{error}</p>}
           </CardContent>
           <CardFooter>
-            <Button onClick={handleVote} className="w-full" disabled={selectedCandidate === null}>
+            <Button onClick={handleVote} className="w-full" disabled={!selectedCandidate || loadingCandidates}>
               <Vote className="mr-2 h-4 w-4" />
               Cast Your Vote
             </Button>
@@ -229,7 +298,7 @@ export default function FaceVerification() {
                 setStep("verification")
                 setVoterId("")
                 setVerified(false)
-                setSelectedCandidate(null)
+                setSelectedCandidate("")
                 setVoteSubmitted(false)
               }}
             >
@@ -247,11 +316,9 @@ export default function FaceVerification() {
               You are about to cast your vote for:
               <div className="mt-2 p-4 bg-muted rounded-lg">
                 <p className="font-medium">
-                  {selectedCandidate !== null && candidates.find((c) => c.id === selectedCandidate)?.name}
+                  {candidates.find((c) => c.id === selectedCandidate)?.name || "Unknown Candidate"}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  {selectedCandidate !== null && candidates.find((c) => c.id === selectedCandidate)?.party}
-                </p>
+                <p className="text-sm text-muted-foreground">Independent</p>
               </div>
               <p className="mt-2">This action cannot be undone. Are you sure you want to proceed?</p>
             </AlertDialogDescription>

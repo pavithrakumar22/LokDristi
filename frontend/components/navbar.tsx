@@ -74,8 +74,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: t("grievances"), href: "/grievances", icon: <MessageSquare size={18} /> },
-    { name: t("updates"), href: "#updates", icon: <FileText size={18} /> },
-    { name: t("voting"), href: "#voting", icon: <Vote size={18} /> },
+    { name: t("voting"), href: "/faceVerification", icon: <Vote size={18} /> },
     { name: t("Petitions"), href: "/petitions", icon: <Columns4 size={18} /> },
     { name: t("Projects"), href: "/projects", icon: <FolderKanban size={18} /> },
     { name: t("donate"), href: "/DonatePage", icon: <HandCoins size={18} /> },
@@ -160,7 +159,7 @@ const Navbar = () => {
             <div className="flex items-center">
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/placeholder.svg?height=40&width=40"
+                  src="https://lokdhristi.s3.us-east-1.amazonaws.com/lokdhristi.png"
                   alt="LokDhristi Logo"
                   width={40}
                   height={40}

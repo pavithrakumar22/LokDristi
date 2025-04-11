@@ -16,7 +16,7 @@ const ImpactStories = () => {
       title: "New School in Rural Maharashtra",
       description:
         "Thanks to donations to the Education fund, a new school was built in a remote village, providing education to over 200 children who previously had to walk 10km to the nearest school.",
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/Alttext-new-school-for-kidspceeibdg.png",
       quote:
         "The new school has transformed our village. Our children now have access to quality education right here.",
       author: "Sarpanch, Rajgad Village",
@@ -27,7 +27,7 @@ const ImpactStories = () => {
       title: "Medical Camp in Odisha",
       description:
         "Healthcare donations funded a week-long medical camp in flood-affected areas of Odisha, providing essential healthcare services to over 5,000 people and distributing medicines worth ₹25 lakhs.",
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/Free-Medical-Camp-1024x576.jpg",
       quote:
         "The medical camp was a lifeline for our community after the devastating floods. We received medical care that would have been impossible otherwise.",
       author: "Resident, Balasore District",
@@ -38,7 +38,7 @@ const ImpactStories = () => {
       title: "Disaster Relief in Uttarakhand",
       description:
         "PM Relief Fund donations were used to provide immediate assistance to families affected by landslides in Uttarakhand, including temporary shelters, food, and essential supplies.",
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/survivor+on+the+wheel+chair_67--621x414.jpg",
       quote:
         "When we lost everything in the landslide, the quick relief support helped us survive the first critical weeks. We are grateful for the generosity of donors.",
       author: "Survivor, Chamoli District",
