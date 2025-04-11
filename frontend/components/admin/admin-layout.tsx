@@ -20,6 +20,7 @@ import {
   Bell,
   User,
   ChevronDown,
+  Vote
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -82,14 +83,9 @@ export default function AdminLayout({ children, activeSection, setActiveSection 
       section: "grievances",
     },
     {
-      name: "Users",
-      icon: <Users className="h-5 w-5" />,
-      section: "users",
-    },
-    {
-      name: "Settings",
-      icon: <Settings className="h-5 w-5" />,
-      section: "settings",
+      name: "Voting",
+      icon: <Vote className="h-5 w-5" />,
+      section: "voting",
     },
   ]
 
@@ -116,7 +112,7 @@ export default function AdminLayout({ children, activeSection, setActiveSection 
 
           <Link href="/admin" className="flex items-center">
             <Image
-              src="/placeholder.svg?height=40&width=40"
+              src="https://lokdhristi.s3.us-east-1.amazonaws.com/lokdhristi.png"
               alt="LokDhristi Logo"
               width={40}
               height={40}

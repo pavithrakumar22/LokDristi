@@ -142,7 +142,7 @@ const Navbar = () => {
             <div className="flex items-center">
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/placeholder.svg?height=40&width=40"
+                  src="https://lokdhristi.s3.us-east-1.amazonaws.com/lokdhristi.png"
                   alt="LokDhristi Logo"
                   width={40}
                   height={40}

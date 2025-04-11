@@ -103,10 +103,10 @@ const Hero = () => {
                 }}
               >
                 <Image
-                  src="/placeholder.svg?height=500&width=500"
+                  src="https://lokdhristi.s3.us-east-1.amazonaws.com/lokdhristi.png"
                   alt="LokDhristi Logo"
-                  width={500}
-                  height={500}
+                  width={800}
+                  height={800}
                   className="object-contain drop-shadow-xl"
                   priority
                 />

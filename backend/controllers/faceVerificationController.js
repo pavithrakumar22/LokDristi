@@ -1,5 +1,6 @@
 import { getVoterImageUrl } from '../models/Voter.js';
 import { verifyImageWithStored } from '../utils/deepface.js';
+import { getElectionActive } from './electionState.js';
 
 export const verifyFace = async (req, res) => {
   const { voterId, capturedImages } = req.body;
@@ -9,6 +10,9 @@ export const verifyFace = async (req, res) => {
   }
 
   try {
+    if (!getElectionActive()) {
+      return res.status(400).json({ message: 'Election is not active. Cannot verify.' });
+    }
     const storedImageUrl = await getVoterImageUrl(voterId);
     if (!storedImageUrl) return res.status(404).json({ message: 'Voter not registered' });
 

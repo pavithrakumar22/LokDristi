@@ -1,61 +1,18 @@
 "use client"
 
 import { useState } from "react"
+import AdminLayout from "@/components/admin/admin-layout"
 import DonationsSection from "@/components/admin/donations-section"
 import ProjectsSection from "@/components/admin/projects-section"
 import SuggestionsSection from "@/components/admin/suggestions-section"
 import GrievancesSection from "@/components/admin/grievances-section"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-
-// Assuming AdminLayout component (you'll need to adjust based on your actual implementation)
-function AdminLayout({ children, activeSection, setActiveSection }: { children: React.ReactNode; activeSection: string; setActiveSection: React.Dispatch<React.SetStateAction<string>> }) {
-  const sections = [
-    { id: "dashboard", label: "Dashboard" },
-    { id: "donations", label: "Donations" },
-    { id: "projects", label: "Projects" },
-    { id: "suggestions", label: "Suggestions" },
-    { id: "grievances", label: "Grievances" },
-    { id: "voting", label: "Voting" },
-  ]
-
-  return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <div className="w-64 bg-gray-100 p-4">
-        <h2 className="text-xl font-bold mb-4">Admin Portal</h2>
-        <nav>
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => {
-                console.log(`Switching to section: ${section.id}`) // Debug log
-                setActiveSection(section.id)
-              }}
-              className={`block w-full text-left py-2 px-4 mb-2 rounded ${
-                activeSection === section.id ? "bg-blue-500 text-white" : "hover:bg-gray-200"
-              }`}
-            >
-              {section.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-      {/* Main content */}
-      <div className="flex-1 p-6">
-        {children}
-      </div>
-    </div>
-  )
-}
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog" // Ensure this path is correct
+import { Input } from "@/components/ui/input" // Ensure this path is correct
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card" // Ensure this path is correct
 
 export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("dashboard")
-
-  // Debug log to check activeSection changes
-  console.log("Current activeSection:", activeSection)
 
   return (
     <AdminLayout activeSection={activeSection} setActiveSection={setActiveSection}>
@@ -92,6 +49,7 @@ export default function AdminDashboard() {
               description="vs. last month"
             />
           </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RecentActivityCard />
             <QuickActionsCard setActiveSection={setActiveSection} />
@@ -108,7 +66,19 @@ export default function AdminDashboard() {
   )
 }
 
-function DashboardCard({ title, value, change, positive, description }: { title: string; value: string; change: string; positive: boolean; description: string }) {
+function DashboardCard({
+  title,
+  value,
+  change,
+  positive,
+  description,
+}: {
+  title: string
+  value: string
+  change: string
+  positive: boolean
+  description: string
+}) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h3 className="text-gray-500 text-sm font-medium">{title}</h3>
@@ -123,11 +93,36 @@ function DashboardCard({ title, value, change, positive, description }: { title:
 
 function RecentActivityCard() {
   const activities = [
-    { id: 1, action: "New donation received", details: "₹25,000 for Education Fund", time: "10 minutes ago" },
-    { id: 2, action: "Project status updated", details: "Rural Road Construction: 75% complete", time: "1 hour ago" },
-    { id: 3, action: "Suggestion approved", details: "Digital Literacy Program in Rural Areas", time: "2 hours ago" },
-    { id: 4, action: "Grievance resolved", details: "Water supply issue in Sector 12", time: "3 hours ago" },
-    { id: 5, action: "New project created", details: "Solar Power Installation in Government Schools", time: "5 hours ago" },
+    {
+      id: 1,
+      action: "New donation received",
+      details: "₹25,000 for Education Fund",
+      time: "10 minutes ago",
+    },
+    {
+      id: 2,
+      action: "Project status updated",
+      details: "Rural Road Construction: 75% complete",
+      time: "1 hour ago",
+    },
+    {
+      id: 3,
+      action: "Suggestion approved",
+      details: "Digital Literacy Program in Rural Areas",
+      time: "2 hours ago",
+    },
+    {
+      id: 4,
+      action: "Grievance resolved",
+      details: "Water supply issue in Sector 12",
+      time: "3 hours ago",
+    },
+    {
+      id: 5,
+      action: "New project created",
+      details: "Solar Power Installation in Government Schools",
+      time: "5 hours ago",
+    },
   ]
 
   return (
@@ -153,13 +148,28 @@ function RecentActivityCard() {
   )
 }
 
-function QuickActionsCard({ setActiveSection }: { setActiveSection: React.Dispatch<React.SetStateAction<string>> }) {
+function QuickActionsCard({ setActiveSection }: { setActiveSection: (section: string) => void }) {
   const actions = [
-    { title: "Create New Project", description: "Set up a new government initiative or project", action: () => setActiveSection("projects") },
-    { title: "Review Pending Suggestions", description: "Evaluate and respond to citizen suggestions", action: () => setActiveSection("suggestions") },
-    { title: "Address Urgent Grievances", description: "Respond to high-priority citizen complaints", action: () => setActiveSection("grievances") },
-    { title: "Generate Donation Report", description: "Create a summary of recent donations", action: () => setActiveSection("donations") },
-    { title: "Manage Voting", description: "Start elections or declare results", action: () => setActiveSection("voting") },
+    {
+      title: "Create New Project",
+      description: "Set up a new government initiative or project",
+      action: () => setActiveSection("projects"),
+    },
+    {
+      title: "Review Pending Suggestions",
+      description: "Evaluate and respond to citizen suggestions",
+      action: () => setActiveSection("suggestions"),
+    },
+    {
+      title: "Address Urgent Grievances",
+      description: "Respond to high-priority citizen complaints",
+      action: () => setActiveSection("grievances"),
+    },
+    {
+      title: "Generate Donation Report",
+      description: "Create a summary of recent donations",
+      action: () => setActiveSection("donations"),
+    },
   ]
 
   return (
@@ -172,10 +182,7 @@ function QuickActionsCard({ setActiveSection }: { setActiveSection: React.Dispat
           {actions.map((action, index) => (
             <button
               key={index}
-              onClick={() => {
-                console.log(`Quick action clicked: ${action.title}`) // Debug log
-                action.action()
-              }}
+              onClick={action.action}
               className="text-left p-4 border rounded-lg hover:bg-blue-50 transition-colors"
             >
               <h4 className="font-medium text-blue-600">{action.title}</h4>
@@ -187,6 +194,7 @@ function QuickActionsCard({ setActiveSection }: { setActiveSection: React.Dispat
     </div>
   )
 }
+
 
 function VotingSection() {
   const [candidates, setCandidates] = useState([""])
@@ -217,7 +225,7 @@ function VotingSection() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          "candidates": ["Alice", "Bob", "Charlie"]
+            "candidates": ["Akshaya", "Greeshma", "Pavithra", "Sudharshan"]
         }),
       })
 
@@ -227,6 +235,32 @@ function VotingSection() {
       setIsDialogOpen(false)
       setCandidates([""])
       alert("Election started successfully!")
+    } catch (error) {
+      console.error("Error starting election:", error)
+      alert("Failed to start election: " + (error instanceof Error ? error.message : "Unknown error"))
+    }
+  }
+
+  const endElection = async () => {
+
+    try {
+      const response = await fetch("http://localhost:5001/api/end-election", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // body: JSON.stringify({
+        //   "candidates": ["Alice", "Bob", "Charlie"]
+        // }),
+      })
+      const response2 = await fetch("http://localhost:5001/api/reset-votes", {
+        method: "DELETE",
+      })
+
+      if (!response.ok) throw new Error("Failed to start election")
+      const data = await response.json()
+      console.log("Election Ended:", data)
+      setIsDialogOpen(false)
+      setCandidates([""])
+      alert("Election Ended successfully!")
     } catch (error) {
       console.error("Error starting election:", error)
       alert("Failed to start election: " + (error instanceof Error ? error.message : "Unknown error"))
@@ -254,6 +288,7 @@ function VotingSection() {
       <div className="flex gap-4">
         <Button onClick={startElection}>Start Election</Button>
         <Button onClick={declareResults}>Declare Results</Button>
+        <Button onClick={endElection}>End Election</Button>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

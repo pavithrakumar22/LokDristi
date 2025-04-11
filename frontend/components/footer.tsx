@@ -36,7 +36,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Image src="/placeholder.svg?height=40&width=40" alt="LokDhristi Logo" width={40} height={40} />
+              <Image src="https://lokdhristi.s3.us-east-1.amazonaws.com/lokdhristi.png" alt="LokDhristi Logo" width={40} height={40} />
               <h3 className="text-xl font-bold">LokDhristi</h3>
             </div>
             <p className="mb-4 text-blue-100">

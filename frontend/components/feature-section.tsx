@@ -42,7 +42,7 @@ const router = useRouter()
       description:
         "Submit and upvote community grievances to bring attention to issues that matter most to citizens. Our transparent tracking system ensures that no complaint goes unnoticed.",
       icon: <MessageSquareIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/employee-grievances.png",
       details: [
         "Submit grievances with photo and location evidence",
         "Upvote system to prioritize urgent community issues",
@@ -62,7 +62,7 @@ const router = useRouter()
       description:
         "Participate in democratic decision-making through our secure, blockchain-based online voting platform for public initiatives, local proposals, and community projects.",
       icon: <VoteIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/Wordpress-Featured-Header-900-x-500-px-4.jpg",
       details: [
         "Secure authentication using Aadhaar verification",
         "Blockchain technology ensuring tamper-proof voting records",
@@ -82,7 +82,7 @@ const router = useRouter()
       description:
         "Create and sign petitions for causes that matter to your community, driving change through collective action with a transparent process for government response to petitions that reach signature thresholds.",
       icon: <GlobeIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/istockphoto-1815149460-612x612.jpg",
       details: [
         "Easy petition creation with multimedia support",
         "Secure signature verification system",
@@ -102,7 +102,7 @@ const router = useRouter()
       description:
         "Access our AI-powered chatbot that explains your legal rights in simple, easy-to-understand language, answering your legal questions instantly and providing guidance on government procedures.",
       icon: <LightbulbIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/5-AI-Advancements-to-Expect-in-the-Next-10-Years-scaled.jpeg",
       details: [
         "24/7 availability for instant legal guidance",
         "Simplified explanations of complex legal terms and procedures",
@@ -122,7 +122,7 @@ const router = useRouter()
       description:
         "Receive important notifications and alerts about emergencies, deadlines, and critical updates relevant to your location and interests through multiple channels including SMS, email, and app notifications.",
       icon: <AlertTriangleIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/Sinch-Blog-What-is-a-push-notification_1400x830-1.png.webp",
       details: [
         "Real-time emergency alerts with geolocation targeting",
         "Customizable notification preferences by category",
@@ -142,7 +142,7 @@ const router = useRouter()
       description:
         "Submit your ideas and suggestions to improve government services and community initiatives. The best ideas are implemented with full transparency and recognition for contributors.",
       icon: <PencilIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/stock-vector-suggestion-vector-concept-business-people-putting-light-bulb-into-a-suggestion-box-2014450553.jpg",
       details: [
         "Open platform for submitting improvement ideas",
         "Community voting to highlight the most impactful suggestions",
@@ -162,7 +162,7 @@ const router = useRouter()
       description:
         "Monitor the progress of government projects and spending in real-time with transparent tracking tools that show milestones, timelines, budget utilization, and current status updates.",
       icon: <LineChartIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/istockphoto-1307382628-612x612.jpg",
       details: [
         "Live project dashboards with milestone tracking",
         "Before/after imagery of infrastructure projects",
@@ -182,7 +182,7 @@ const router = useRouter()
       description:
         "Track public funds and make donations to support community projects and initiatives with complete transparency on how every rupee is utilized.",
       icon: <DollarSignIcon className="h-10 w-10 text-blue-600" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://lokdhristi.s3.us-east-1.amazonaws.com/volunteers-collecting-goods-charity-into-huge-donation-box-donating-coins-into-jar-donation-charity-donation-funds-gift-kind-concept-pinkish-coral-bluevector-isolated-illustration_335657-1387.jpg.avif",
       details: [
         "Transparent tracking of government fund allocation and utilization",
         "Secure donation platform for community projects",
