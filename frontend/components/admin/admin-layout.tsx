@@ -205,7 +205,6 @@ export default function AdminLayout({ children, activeSection, setActiveSection 
           </nav>
         </aside>
 
-        {/* Main Content */}
         <main className={`flex-1 p-6 overflow-y-auto ${isMobileMenuOpen ? "lg:ml-64" : ""}`}>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
             {children}
